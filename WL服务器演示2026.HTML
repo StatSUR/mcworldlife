@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Life 服务器官网</title>
+  <link rel="icon" href="WL图标(Server64x).png" type="image/png" />
+  <!-- Font Awesome 6 (免费) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ===== 基础重置 ===== */
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      background: #fff;
+      color: #111;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body { background: #0f172a; color: #f8fafc; }
+    }
+
+    /* ===== 页眉 / 页脚 ===== */
+    header, footer {
+      background: linear-gradient(90deg, #0ea5e9, #6366f1);
+      color: #fff;
+      padding: 1rem 2rem;
+      width: 100%;
+      z-index: 100;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      position: relative;
+      backdrop-filter: blur(4px);
+    }
+
+    .title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(1.2rem, 2vw, 1.6rem);
+      font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 0 10px rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .user-info {
+      font-weight: bold;
+      padding: 0.3rem 0.8rem;
+      border-radius: 30px;
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(4px);
+      cursor: default;
+      transition: background 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .user-info { background: rgba(255,255,255,0.1); }
+    }
+
+    nav {
+      margin-left: auto;
+      display: flex;
+      gap: clamp(0.6rem, 1.8vw, 1.2rem);
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      padding: 0.4rem 0;
+      letter-spacing: 0.3px;
+    }
+
+    nav a::after {
+      content: "";
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #facc15;
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after,
+    nav a.active::after {
+      width: 100%;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: #facc15;
+      transform: translateY(-2px);
+    }
+
+    /* ===== 主内容 ===== */
+    main {
+      flex: 1;
+      padding: clamp(1rem, 3vw, 2rem);
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    main.fade-out {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    main.fade-in {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* 响应式卡片 */
+    section {
+      background: #f9fafb;
+      padding: clamp(1.2rem, 3vw, 2rem);
+      margin: clamp(1rem, 3vw, 2rem) auto;
+      border-radius: 18px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+      width: min(90%, 800px);
+      transition: transform 0.3s, box-shadow 0.3s;
+      animation: fadeUp 0.5s ease;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    section:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      section {
+        background: #1e293b;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      }
+      section:hover {
+        box-shadow: 0 18px 40px rgba(0,0,0,0.7);
+      }
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+      color: #1e40af;
+      font-size: 1.8rem;
+      border-left: 6px solid #0ea5e9;
+      padding-left: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      h2 { color: #facc15; border-left-color: #8b5cf6; }
+    }
+
+    /* ===== 团队成员美化 ===== */
+    .team {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .team span {
+      padding: 0.6rem 1.4rem;
+      border-radius: 40px;
+      font-weight: 500;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.1rem;
+    }
+
+    .team span:hover {
+      transform: scale(1.05) translateY(-3px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+    }
+
+    /* 角色专属颜色 */
+    .role-owner {
+      background: #fbbf24;
+      color: #1e293b;
+      border: 2px solid #f59e0b;
+    }
+    .role-builder {
+      background: #60a5fa;
+      color: #0f172a;
+      border: 2px solid #3b82f6;
+    }
+    .role-admin {
+      background: #a78bfa;
+      color: #0f172a;
+      border: 2px solid #8b5cf6;
+    }
+    .role-player {
+      background: #34d399;
+      color: #064e3b;
+      border: 2px solid #10b981;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .role-owner { background: #b45309; color: #fef3c7; border-color: #fbbf24; }
+      .role-builder { background: #1e40af; color: #dbeafe; border-color: #60a5fa; }
+      .role-admin { background: #5b21b6; color: #ede9fe; border-color: #a78bfa; }
+      .role-player { background: #065f46; color: #d1fae5; border-color: #34d399; }
+    }
+
+    /* ===== 表单 ===== */
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .input-group {
+      position: relative;
+    }
+
+    input, button {
+      padding: 0.8rem 1rem;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    input {
+      background: #fff;
+      border: 2px solid #e2e8f0;
+      color: #111;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #0ea5e9;
+      box-shadow: 0 0 0 3px rgba(14,165,233,0.2);
+    }
+
+    button {
+      background: linear-gradient(90deg, #3b82f6, #6366f1);
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+      border: none;
+      box-shadow: 0 4px 10px rgba(59,130,246,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.4);
+      transform: translate(-50%, -50%);
+      transition: width 0.3s, height 0.3s;
+    }
+
+    button:active::after {
+      width: 200px;
+      height: 200px;
+    }
+
+    button:hover {
+      opacity: 0.9;
+      transform: scale(1.02);
+      box-shadow: 0 6px 14px rgba(59,130,246,0.4);
+    }
+
+    .toggle-pw {
+      position: absolute;
+      top: 50%;
+      right: 1rem;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #64748b;
+      transition: color 0.2s;
+    }
+
+    .toggle-pw:hover {
+      color: #0ea5e9;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      input {
+        background: #334155;
+        color: #f8fafc;
+        border-color: #475569;
+      }
+      input:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.3); }
+      button { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
+      .toggle-pw { color: #94a3b8; }
+      .toggle-pw:hover { color: #facc15; }
+    }
+
+    /* 密码提示动态样式 */
+    span.hint {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-top: -0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: color 0.2s;
+    }
+    span.hint.valid {
+      color: #10b981;
+    }
+
+    /* ===== 滑块验证（修复白色遮挡） ===== */
+    .slider-captcha {
+      user-select: none;
+      width: 100%;
+      margin: 1rem 0 0.5rem;
+      background: #e5e7eb;
+      border-radius: 30px;
+      height: 44px;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #d1d5db;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .slider-track {
+      position: absolute;
+      height: 100%;
+      width: 100%;
+      background: #d1d5db;
+    }
+
+    .slider-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: #10b981;
+      z-index: 1;
+      width: 0;
+      border-radius: 30px 0 0 30px;
+      transition: width 0.1s ease;
+    }
+
+    .slider-thumb {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 44px;
+      height: 44px;
+      background: #3b82f6;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 30px;
+      cursor: grab;
+      transition: background 0.2s, box-shadow 0.2s, left 0.1s ease, transform 0.2s;
+      z-index: 2;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      background-clip: padding-box;
+      border: 2px solid transparent;
+    }
+
+    .slider-thumb:active { cursor: grabbing; }
+
+    .slider-success {
+      background: #10b981 !important;
+      cursor: default !important;
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.3);
+      animation: pop 0.3s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    /* ===== 模态框 ===== */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      animation: fadeIn 0.2s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal {
+      position: relative;
+      background: #fff;
+      padding: 2rem 2rem 1.8rem;
+      border-radius: 32px;
+      width: min(90%, 400px);
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      animation: scaleIn 0.3s ease;
+    }
+
+    @keyframes scaleIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal h3 {
+      margin-bottom: 1rem;
+      color: #1e40af;
+      font-size: 1.6rem;
+      padding-right: 1.5rem;
+    }
+
+    .modal p { font-size: 1.1rem; line-height: 1.5; }
+
+    .modal button.close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: #64748b;
+      transition: background 0.2s, color 0.2s, transform 0.2s;
+      box-shadow: none;
+    }
+
+    .modal button.close:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+      transform: rotate(90deg);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .modal {
+        background: #1e293b;
+        color: #f8fafc;
+      }
+      .modal h3 { color: #facc15; }
+      .modal button.close {
+        color: #94a3b8;
+      }
+      .modal button.close:hover {
+        background: #334155;
+        color: #f8fafc;
+      }
+    }
+
+    /* ===== 日报列表美化 ===== */
+    ul { list-style: none; }
+    li {
+      margin: 0.8rem 0;
+      padding: 0.8rem 1.2rem;
+      background: #f1f5f9;
+      border-radius: 16px;
+      transition: background 0.2s, transform 0.2s;
+    }
+    li:hover {
+      background: #e2e8f0;
+      transform: translateX(5px);
+    }
+    li a {
+      color: #0ea5e9;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    li a:hover { text-decoration: underline; }
+    @media (prefers-color-scheme: dark) {
+      li { background: #334155; }
+      li:hover { background: #475569; }
+      li a { color: #8b5cf6; }
+    }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* 快速登录链接 */
+    .quick-login {
+      text-align: center;
+      margin-top: 0.5rem;
+    }
+    .quick-login a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+      cursor: pointer;
+    }
+    .quick-login a:hover {
+      color: #6366f1;
+      text-decoration: underline;
+    }
+    @media (prefers-color-scheme: dark) {
+      .quick-login a { color: #8b5cf6; }
+      .quick-login a:hover { color: #facc15; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="user-info" id="user-info"><i class="fa-solid fa-user"></i> 未登录</div>
+    <div class="title"><i class="fa-solid fa-globe"></i> World Life 官方网站</div>
+    <nav>
+      <a data-page="home"><i class="fa-solid fa-house"></i> 首页</a>
+      <a data-page="server"><i class="fa-solid fa-server"></i> 服务器</a>
+      <a data-page="commands"><i class="fa-solid fa-terminal"></i> 指令</a>
+      <a data-page="daily"><i class="fa-solid fa-newspaper"></i> 日报</a>
+      <a id="login-register-nav" data-page="login"><i class="fa-solid fa-right-to-bracket"></i> 登录/注册</a>
+    </nav>
+  </header>
+
+  <main id="content"></main>
+
+  <footer>
+    <i class="fa-regular fa-copyright"></i> 2026 World Life 服务器 by RXC | 晋ICP备 20260001号
+  </footer>
+
+  <!-- 模态框 -->
+  <div class="modal-overlay" id="modal-overlay">
+    <div class="modal">
+      <button class="close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+      <h3 id="modal-title"></h3>
+      <p id="modal-message"></p>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- 数据 ----------
+      const diaryEntries = [
+        { file: 'DATE1.html', date: '2025-08-06', desc: '测试日报。' },
+        { file: 'DATE2.html', date: '2025-08-05', desc: '服务器维护，优化了地图加载速度。' }
+      ];
+
+      // ---------- 密码提示动态变色 ----------
+      function setupPasswordHint(passwordId, hintSelector) {
+        const pwdInput = document.getElementById(passwordId);
+        if (!pwdInput) return;
+        pwdInput.addEventListener('input', function() {
+          const hint = document.querySelector(hintSelector);
+          if (!hint) return;
+          if (this.value.length >= 8) {
+            hint.classList.add('valid');
+          } else {
+            hint.classList.remove('valid');
+          }
+        });
+      }
+
+      // ---------- 页面生成函数 ----------
+      function getHomePage() {
+        return `<section><h2><i class="fa-solid fa-hand-wave"></i> 欢迎来到 World Life 服务器</h2><p>这是一个虚拟的 Minecraft 世界，你可以加入不同省份，扮演多种角色~</p></section>` +
+               `<section><h2><i class="fa-solid fa-map"></i> 世界地图玩法</h2><p>在1:1000比例的世界地图中，可加入或创建省份~</p></section>` +
+               `<section><h2><i class="fa-solid fa-users"></i> 主要人员</h2><div class="team">
+                 <span class="role-owner"><i class="fa-solid fa-crown"></i> 服主：星星 RXC</span>
+                 <span class="role-builder"><i class="fa-solid fa-hammer"></i> 建服者：洛白</span>
+                 <span class="role-admin"><i class="fa-solid fa-shield"></i> 管理员：CHLovo</span>
+                 <span class="role-player"><i class="fa-solid fa-users"></i> 玩家团队</span>
+               </div></section>`;
+      }
+
+      function getDailyPage() {
+        let list = '<ul>';
+        diaryEntries.forEach(entry => {
+          list += `<li><a href="${entry.file}" target="_blank">${entry.date}</a> — ${entry.desc}</li>`;
+        });
+        list += '</ul>';
+        return `<section><h2><i class="fa-regular fa-calendar"></i> 服务器日报列表</h2>${list}</section>`;
+      }
+
+      function getLoginPage() {
+        return `<section><h2><i class="fa-solid fa-right-to-bracket"></i> 请登录</h2>
+          <form onsubmit="handleLogin(event)">
+          <div class="input-group"><input id="login-username" type="text" placeholder="用户名" required minlength="3"/></div>
+          <div class="input-group"><input id="login-password" type="password" placeholder="密码" required/>
+          <span class="toggle-pw" onclick="togglePassword('login-password', this)"><i class="fa-regular fa-eye"></i></span></div>
+          <button type="submit"><i class="fa-solid fa-arrow-right-to-bracket"></i> 登录</button></form>
+          <div class="quick-login"><a onclick="switchToRegister()">没有账号？立即注册</a></div>
+          </section>
+          <section><h2><i class="fa-solid fa-user-plus"></i> 注册新账户</h2>
+          <form onsubmit="handleRegister(event)">
+          <div class="input-group"><input id="register-username" type="text" placeholder="新用户名（至少3字符）" required minlength="3"/></div>
+          <div class="input-group"><input id="register-password" type="password" placeholder="新密码（8-16位）" pattern=".{8,16}" required/>
+          <span class="toggle-pw" onclick="togglePassword('register-password', this)"><i class="fa-regular fa-eye"></i></span></div>
+          <span class="hint" id="password-hint"><i class="fa-regular fa-circle-check"></i> 密码长度需8-16位~</span>
+          <div class="input-group"><input id="register-confirm" type="password" placeholder="确认密码" required/>
+          <span class="toggle-pw" onclick="togglePassword('register-confirm', this)"><i class="fa-regular fa-eye"></i></span></div>
+          <div class="slider-captcha" id="slider">
+            <div class="slider-track"></div>
+            <div class="slider-fill"></div>
+            <div class="slider-thumb" id="slider-thumb"><i class="fa-solid fa-angles-right"></i></div>
+            <input type="hidden" id="captcha-verified" value="false"/>
+          </div>
+          <span class="hint"><i class="fa-regular fa-hand-pointer"></i> 拖动滑块完成验证~</span>
+          <button type="submit"><i class="fa-solid fa-user-check"></i> 注册</button></form>
+          <div class="quick-login"><a onclick="switchToLogin()">已有账号？立即登录</a></div>
+          </section>`;
+      }
+
+      // 页面内容映射
+      const pages = {
+        home: getHomePage(),
+        server: `<section><h2><i class="fa-solid fa-circle-info"></i> 如何加入服务器</h2><p>加入我们的QQ群：749664574~</p></section>`,
+        commands: `<section><h2><i class="fa-solid fa-terminal"></i> 常用指令列表</h2><ul><li>/reg 密码 密码：注册</li><li>/login 密码：登录</li><li>/tpa 玩家名：传送请求</li><li>/tpahere 玩家名：请求对方传送</li><li>/back：回到死亡/传送点</li><li>/co i：启用/关闭检查器</li></ul></section>`,
+        daily: getDailyPage(),
+        login: ''  // 动态填充
+      };
+
+      // ---------- 辅助函数 ----------
+      function updateUserInfo() {
+        const user = localStorage.getItem('currentUser');
+        const userInfo = document.getElementById('user-info');
+        const loginNav = document.getElementById('login-register-nav');
+        if (user) {
+          userInfo.innerHTML = `<i class="fa-solid fa-user-check"></i> 您好，${user} | <a href="#" onclick="logoutUser(event)">注销</a>`;
+          loginNav.innerHTML = '<i class="fa-solid fa-id-card"></i> 我的信息';
+          pages.login = `<section><h2><i class="fa-solid fa-id-card"></i> 当前用户信息</h2><p>用户名：${user}</p><p>登录时间：${new Date().toLocaleString()}</p><button onclick="logoutUser(event)"><i class="fa-solid fa-sign-out-alt"></i> 注销</button></section>`;
+        } else {
+          userInfo.innerHTML = '<i class="fa-solid fa-user"></i> 未登录';
+          loginNav.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> 登录/注册';
+          pages.login = getLoginPage();
+        }
+      }
+
+      // 切换页面动画
+      function animateContent(html) {
+        const main = document.getElementById('content');
+        main.classList.add('fade-out');
+        setTimeout(() => {
+          main.innerHTML = html;
+          main.classList.remove('fade-out');
+          main.classList.add('fade-in');
+          // 如果当前是登录页且未登录，设置密码提示监听
+          if (!localStorage.getItem('currentUser')) {
+            setTimeout(() => {
+              setupPasswordHint('register-password', '#password-hint');
+            }, 100);
+          }
+        }, 200);
+      }
+
+      window.switchPage = function(e) {
+        e.preventDefault();
+        const link = e.currentTarget;
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+        updateUserInfo();
+        const page = link.dataset.page;
+        animateContent(pages[page] || '');
+        if (page === 'login' && !localStorage.getItem('currentUser')) {
+          setTimeout(() => {
+            initSliderCaptcha();
+          }, 250);
+        }
+      };
+
+      // 快速切换登录/注册
+      window.switchToLogin = function() {
+        const loginNav = document.querySelector('nav a[data-page="login"]');
+        if (loginNav) loginNav.click();
+      };
+      window.switchToRegister = function() {
+        const loginNav = document.querySelector('nav a[data-page="login"]');
+        if (loginNav) loginNav.click();
+      };
+
+      // 注销（阻止默认行为）
+      window.logoutUser = function(e) {
+        if (e) e.preventDefault();
+        localStorage.removeItem('currentUser');
+        updateUserInfo();
+        pages.login = getLoginPage();
+        showModal('已注销', '您已成功退出登录');
+        document.querySelector('nav a[data-page="home"]').click();
+      };
+
+      // 模态框
+      window.showModal = function(title, msg) {
+        document.getElementById('modal-title').textContent = title;
+        document.getElementById('modal-message').textContent = msg;
+        document.getElementById('modal-overlay').style.display = 'flex';
+      };
+
+      window.closeModal = function() {
+        document.getElementById('modal-overlay').style.display = 'none';
+      };
+
+      document.getElementById('modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+      });
+
+      // 登录
+      window.handleLogin = function(e) {
+        e.preventDefault();
+        const user = document.getElementById('login-username').value;
+        const pass = document.getElementById('login-password').value;
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+        if (!users.hasOwnProperty(user)) showModal('登录失败', '没有此账户！');
+        else if (users[user] !== pass) showModal('登录失败', '密码错误！');
+        else {
+          localStorage.setItem('currentUser', user);
+          updateUserInfo();
+          showModal('登录成功', `欢迎回来，${user}！`);
+          document.querySelector('nav a[data-page="home"]').click();
+        }
+      };
+
+      // 注册（带滑块重置）
+      window.handleRegister = function(e) {
+        e.preventDefault();
+        const user = document.getElementById('register-username').value;
+        const pass = document.getElementById('register-password').value;
+        const conf = document.getElementById('register-confirm').value;
+        const passed = document.getElementById('captcha-verified').value === 'true';
+        const users = JSON.parse(localStorage.getItem('users') || '{}');
+
+        const resetSlider = window.resetSliderCaptcha || function(){};
+
+        if (!passed) {
+          showModal('注册失败', '请完成滑块验证~');
+          resetSlider();
+          return;
+        }
+        if (pass !== conf) {
+          showModal('注册失败', '两次密码不一致~');
+          resetSlider();
+          return;
+        }
+        if (pass.length < 8 || pass.length > 16) {
+          showModal('注册失败', '密码长度需8-16位~');
+          resetSlider();
+          return;
+        }
+        if (users[user]) {
+          showModal('注册失败', '用户名已存在~');
+          resetSlider();
+          return;
+        }
+        users[user] = pass;
+        localStorage.setItem('users', JSON.stringify(users));
+        showModal('注册成功', '注册成功~');
+        document.querySelector('nav a[data-page="login"]').click();
+        setTimeout(() => {
+          const loginUserInput = document.getElementById('login-username');
+          if (loginUserInput) loginUserInput.value = user;
+        }, 300);
+      };
+
+      // 密码可见切换
+      window.togglePassword = function(id, element) {
+        const input = document.getElementById(id);
+        const icon = element.querySelector('i');
+        if (input.type === 'password') {
+          input.type = 'text';
+          icon.classList.remove('fa-eye');
+          icon.classList.add('fa-eye-slash');
+        } else {
+          input.type = 'password';
+          icon.classList.remove('fa-eye-slash');
+          icon.classList.add('fa-eye');
+        }
+      };
+
+      // ---------- 滑块验证（触摸支持 + 重置）----------
+      function initSliderCaptcha() {
+        const thumb = document.getElementById('slider-thumb');
+        const track = document.getElementById('slider');
+        if (!thumb || !track) return;
+
+        const resetThisSlider = function() {
+          thumb.style.left = '0px';
+          const fill = track.querySelector('.slider-fill');
+          if (fill) fill.style.width = '0px';
+          thumb.classList.remove('slider-success');
+          thumb.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
+          thumb.style.background = '';
+          document.getElementById('captcha-verified').value = 'false';
+          bindEvents();
+        };
+
+        function bindEvents() {
+          thumb.onmousedown = mouseDownHandler;
+          thumb.ontouchstart = touchStartHandler;
+        }
+
+        window.resetSliderCaptcha = resetThisSlider;
+
+        let dragging = false;
+        let startX = 0;
+        let thumbLeft = 0;
+
+        function startDrag(clientX) {
+          if (thumb.classList.contains('slider-success')) return;
+          dragging = true;
+          startX = clientX;
+          const leftStr = thumb.style.left;
+          thumbLeft = leftStr ? parseFloat(leftStr) : 0;
+          document.body.style.userSelect = 'none';
+        }
+
+        function onDrag(clientX) {
+          if (!dragging) return;
+          const delta = clientX - startX;
+          let newLeft = thumbLeft + delta;
+          const maxLeft = track.offsetWidth - thumb.offsetWidth;
+          newLeft = Math.max(0, Math.min(newLeft, maxLeft));
+          thumb.style.left = newLeft + 'px';
+          const fill = track.querySelector('.slider-fill');
+          if (fill) fill.style.width = newLeft + 'px';
+        }
+
+        function stopDrag() {
+          if (!dragging) return;
+          dragging = false;
+          document.body.style.userSelect = '';
+          const maxLeft = track.offsetWidth - thumb.offsetWidth;
+          const currentLeft = parseFloat(thumb.style.left) || 0;
+          if (currentLeft >= maxLeft - 2) {
+            thumb.classList.add('slider-success');
+            thumb.innerHTML = '<i class="fa-solid fa-check"></i>';
+            thumb.style.background = '#10b981';
+            document.getElementById('captcha-verified').value = 'true';
+            thumb.onmousedown = null;
+            thumb.ontouchstart = null;
+          } else {
+            thumb.style.left = '0px';
+            const fill = track.querySelector('.slider-fill');
+            if (fill) fill.style.width = '0px';
+          }
+          document.onmousemove = null;
+          document.ontouchmove = null;
+          document.onmouseup = null;
+          document.ontouchend = null;
+        }
+
+        function mouseDownHandler(e) {
+          e.preventDefault();
+          startDrag(e.clientX);
+          document.onmousemove = function(ev) {
+            ev.preventDefault();
+            onDrag(ev.clientX);
+          };
+          document.onmouseup = function() {
+            stopDrag();
+          };
+        }
+
+        function touchStartHandler(e) {
+          e.preventDefault();
+          const touch = e.touches[0];
+          startDrag(touch.clientX);
+          document.ontouchmove = function(ev) {
+            ev.preventDefault();
+            const touch = ev.touches[0];
+            onDrag(touch.clientX);
+          };
+          document.ontouchend = function() {
+            stopDrag();
+          };
+        }
+
+        resetThisSlider();
+      }
+
+      // 初始加载
+      window.addEventListener("DOMContentLoaded", function() {
+        const navLinks = document.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+          link.addEventListener('click', switchPage);
+        });
+        const homeLink = document.querySelector('nav a[data-page="home"]');
+        if (homeLink) {
+          homeLink.classList.add('active');
+          updateUserInfo();
+          animateContent(pages['home']);
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
