@@ -22,7 +22,7 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      body { background: #0F172A; color: #f8fafc; }
+      body { background: #212121; color: #f8fafc; }  /* 深色模式背景改为 #212121 */
     }
 
     /* ===== 页眉 / 页脚 ===== */
@@ -52,6 +52,13 @@
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    .title img {
+      width: 1.6em;
+      height: 1.6em;
+      vertical-align: middle;
+      border-radius: 4px;
     }
 
     .user-info {
@@ -556,7 +563,10 @@
 <body>
   <header>
     <div class="user-info" id="user-info"><i class="fa-solid fa-user"></i> 未登录</div>
-    <div class="title"><i class="fa-solid fa-globe"></i> World Life 官方网站</div>
+    <div class="title">
+      <img src="WL图标(Server64x).png" alt="WL图标">  <!-- 图标替换为图片 -->
+      World Life 官方网站
+    </div>
     <nav>
       <a data-page="home"><i class="fa-solid fa-house"></i> 首页</a>
       <a data-page="server"><i class="fa-solid fa-server"></i> 服务器</a>
@@ -935,10 +945,4 @@
     })();
   </script>
 </body>
-
 </html>
-
-
-
-
-
