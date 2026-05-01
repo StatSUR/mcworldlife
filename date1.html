@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>沈云区开发计划 · World Life 日报</title>
   <link rel="icon" href="WL图标(Server64x).png" type="image/png" />
-  <!-- Font Awesome 6 (与主站一致) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* ===== 完全复用主站样式 ===== */
     * { margin:0; padding:0; box-sizing:border-box; }
 
     body {
@@ -22,10 +20,9 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      body { background: #0F172A; color: #f8fafc; }
+      body { background: #212121; color: #f8fafc; }
     }
 
-    /* 页眉 (标题完全居中) */
     header, footer {
       background: linear-gradient(90deg, #0ea5e9, #6366f1);
       color: #fff;
@@ -38,7 +35,7 @@
     header {
       display: flex;
       align-items: center;
-      justify-content: center; /* 标题完全居中 */
+      justify-content: center;
       backdrop-filter: blur(4px);
     }
 
@@ -51,7 +48,13 @@
       gap: 6px;
     }
 
-    /* 主内容区 */
+    .title img {
+      width: 1.2em;      /* 调整大小，与原字体图标视觉一致 */
+      height: 1.2em;
+      vertical-align: middle;
+      border-radius: 4px;
+    }
+
     main {
       flex: 1;
       padding: clamp(1rem, 3vw, 2rem);
@@ -60,7 +63,6 @@
       margin: 0 auto;
     }
 
-    /* 卡片样式 */
     article {
       background: #f9fafb;
       padding: clamp(1.5rem, 4vw, 2.5rem);
@@ -93,7 +95,6 @@
       }
     }
 
-    /* 文章头部 */
     .article-header {
       margin-bottom: 2rem;
       border-bottom: 2px solid #e2e8f0;
@@ -140,7 +141,6 @@
       .meta i { color: #8b5cf6; }
     }
 
-    /* 正文样式 */
     .article-content {
       font-size: 1.1rem;
       line-height: 1.8;
@@ -164,7 +164,6 @@
       .article-content h3 { color: #f8fafc; border-left-color: #8b5cf6; }
     }
 
-    /* 页脚 */
     footer {
       display: flex;
       align-items: center;
@@ -175,12 +174,14 @@
 </head>
 <body>
   <header>
-    <div class="title"><i class="fa-solid fa-globe"></i> World Life 日报</div>
+    <div class="title">
+      <img src="WL图标白色(Server64x).png" alt="WL图标">
+      World Life 日报
+    </div>
   </header>
 
   <main>
     <article>
-      <!-- 可编辑内容开始 -->
       <div class="article-header">
         <div class="article-label"><i class="fa-regular fa-newspaper"></i> 日志一 · 开发计划</div>
         <h1>沈云区开发计划</h1>
@@ -202,14 +203,11 @@
         <h3>总结</h3>
         <p>沈云区凭借其平原地形和临海位置的双重优势，具备极大的开发潜力。市长RXC的开发计划，通过科学规划和合理布局，将全面提升沈云区的经济、交通、居住和生态环境水平。我们有信心，在市长RXC的领导下，沈云区将成为夜晨市的重要经济增长极和现代化新城区，展示出令人瞩目的发展成果。</p>
       </div>
-      <!-- 可编辑内容结束 -->
     </article>
   </main>
 
   <footer>
     <i class="fa-regular fa-copyright"></i> 2026 World Life 服务器 by RXC | 晋
+  </footer>
 </body>
-
 </html>
-
-
