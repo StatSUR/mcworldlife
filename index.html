@@ -616,15 +616,29 @@
 
       // ---------- 页面生成函数 ----------
       function getHomePage() {
-        return `<section><h2><i class="fa-solid fa-hand-wave"></i> 欢迎来到 World Life 服务器</h2><p>这是一个虚拟的 Minecraft 世界，你可以加入或创建虚拟的国家，扮演多种角色~</p></section>` +
-               `<section><h2><i class="fa-solid fa-map"></i> 世界地图玩法</h2><p>在1:1000比例的世界地图中，可加入或创建国家~</p></section>` +
-               `<section><h2><i class="fa-solid fa-users"></i> 主要人员</h2><div class="team">
-                 <span class="role-owner"><i class="fa-solid fa-crown"></i> 服主：星星 RXC</span>
-                 <span class="role-builder"><i class="fa-solid fa-hammer"></i> 建服者：洛白</span>
-                 <span class="role-admin"><i class="fa-solid fa-shield"></i> 管理员：CHLovo</span>
-                 <span class="role-player"><i class="fa-solid fa-users"></i> 玩家团队</span>
-               </div></section>`;
-      }
+  return `<section><h2><i class="fa-solid fa-hand-wave"></i> 欢迎来到 World Life 服务器</h2><p>这是一个虚拟的 Minecraft 世界，你可以加入或创建虚拟的国家，扮演多种角色~</p></section>` +
+         `<section><h2><i class="fa-solid fa-map"></i> 世界地图玩法</h2><p>在1:1000比例的世界地图中，可加入或创建国家~</p></section>` +
+         `<section><h2><i class="fa-solid fa-users"></i> 主要人员</h2>
+         <div class="team" style="display: flex; flex-direction: column; gap: 1rem;">
+           <span class="role-owner" style="display: flex; width: 100%; align-items: center; justify-content: center; gap: 8px;">
+             <img src="RXC.jpeg" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+             <i class="fa-solid fa-crown"></i> 服主：星星 RXC
+           </span>
+           <div style="display: flex; gap: 1rem; width: 100%;">
+             <span class="role-builder" style="display: flex; flex: 1; align-items: center; justify-content: center; gap: 8px;">
+               <img src="Lobe.jpeg" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+               <i class="fa-solid fa-hammer"></i> 建服者：洛白
+             </span>
+             <span class="role-admin" style="display: flex; flex: 1; align-items: center; justify-content: center; gap: 8px;">
+               <img src="CHL.jpeg" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+               <i class="fa-solid fa-shield"></i> 管理员：CHLovo
+             </span>
+           </div>
+           <span class="role-player" style="display: flex; width: 100%; align-items: center; justify-content: center; gap: 8px;">
+             <i class="fa-solid fa-users"></i> 玩家团队
+           </span>
+         </div></section>`;
+}
 
       function getDailyPage() {
         let list = '<ul>';
