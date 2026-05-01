@@ -667,7 +667,11 @@
       // 页面内容映射
       const pages = {
         home: getHomePage(),
-        server: `<section><h2><i class="fa-solid fa-circle-info"></i> 如何加入服务器</h2><p>加入我们的QQ群：749664574~</p></section>`,
+        server: `<section><h2><i class="fa-solid fa-circle-info"></i> 如何加入服务器</h2><p>加入我们的QQ群：749664574~</p></section>
+         <section><h2><i class="fa-solid fa-map"></i> 服务器地图</h2>
+         <iframe src="https://earth.motfe.net/overviews/earth_1-1000_overview/unmined.index.html" style="width:100%; height:500px; border:none; border-radius:12px; margin-top:0.5rem; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></iframe>
+         <div style="text-align:center; margin-top:1rem;"><a href="https://earth.motfe.net/overviews/earth_1-1000_overview/unmined.index.html" target="_blank" style="color:#3b82f6; text-decoration:none; font-weight:500;"><i class="fa-solid fa-external-link-alt"></i> 查看大图</a></div>
+         </section>`,
         commands: `<section><h2><i class="fa-solid fa-terminal"></i> 常用指令列表</h2><ul><li>/reg 密码 密码：注册</li><li>/login 密码：登录</li><li>/tpa 玩家名：传送请求</li><li>/tpahere 玩家名：请求对方传送</li><li>/back：回到死亡/传送点</li><li>/co i：启用/关闭检查器</li></ul></section>`,
         daily: getDailyPage(),
         login: ''  // 动态填充
