@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>World Life 服务器官网</title>
   <link rel="icon" href="WL图标(Server64x).png" type="image/png" />
-  <!-- Font Awesome 6 (免费) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     /* ===== 基础重置 ===== */
@@ -22,10 +21,9 @@
     }
 
     @media (prefers-color-scheme: dark) {
-      body { background: #212121; color: #f8fafc; }  /* 深色模式背景改为 #212121 */
+      body { background: #212121; color: #f8fafc; }
     }
 
-    /* ===== 页眉 / 页脚 ===== */
     header, footer {
       background: linear-gradient(90deg, #0ea5e9, #6366f1);
       color: #fff;
@@ -120,7 +118,6 @@
       transform: translateY(-2px);
     }
 
-    /* ===== 主内容 ===== */
     main {
       flex: 1;
       padding: clamp(1rem, 3vw, 2rem);
@@ -140,7 +137,6 @@
       transform: translateY(0);
     }
 
-    /* 响应式卡片 */
     section {
       background: #f9fafb;
       padding: clamp(1.2rem, 3vw, 2rem);
@@ -188,7 +184,6 @@
       h2 { color: #facc15; border-left-color: #8b5cf6; }
     }
 
-    /* ===== 团队成员美化 ===== */
     .team {
       display: flex;
       flex-wrap: wrap;
@@ -212,7 +207,6 @@
       box-shadow: 0 8px 18px rgba(0,0,0,0.15);
     }
 
-    /* 角色专属颜色 */
     .role-owner {
       background: #fbbf24;
       color: #1e293b;
@@ -241,7 +235,6 @@
       .role-player { background: #065f46; color: #d1fae5; border-color: #34d399; }
     }
 
-    /* ===== 表单 ===== */
     form {
       display: flex;
       flex-direction: column;
@@ -335,7 +328,6 @@
       .toggle-pw:hover { color: #facc15; }
     }
 
-    /* 密码提示动态样式 */
     span.hint {
       font-size: 0.9rem;
       color: #64748b;
@@ -349,7 +341,6 @@
       color: #10b981;
     }
 
-    /* ===== 滑块验证（修复白色遮挡） ===== */
     .slider-captcha {
       user-select: none;
       width: 100%;
@@ -418,7 +409,6 @@
       100% { transform: scale(1); }
     }
 
-    /* ===== 模态框 ===== */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -506,7 +496,6 @@
       }
     }
 
-    /* ===== 日报列表美化 ===== */
     ul { list-style: none; }
     li {
       margin: 0.8rem 0;
@@ -536,9 +525,25 @@
       align-items: center;
       justify-content: center;
       gap: 6px;
+      position: relative;
     }
 
-    /* 快速登录链接 */
+    /* ===== 简单的音量图标（无滑块） ===== */
+    .music-btn {
+      position: absolute;
+      left: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.3rem;
+      color: #fff;
+      cursor: pointer;
+      transition: filter 0.2s;
+      z-index: 200;
+    }
+    .music-btn:hover {
+      filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
+    }
+
     .quick-login {
       text-align: center;
       margin-top: 0.5rem;
@@ -564,7 +569,7 @@
   <header>
     <div class="user-info" id="user-info"><i class="fa-solid fa-user"></i> 未登录</div>
     <div class="title">
-      <img src="WL图标白色(Server64x).png" alt="WL图标">  <!-- 图标替换为图片 -->
+      <img src="WL图标白色(Server64x).png" alt="WL图标">
       World Life 官方网站
     </div>
     <nav>
@@ -579,10 +584,12 @@
   <main id="content"></main>
 
   <footer>
+    <div class="music-btn" id="musicToggle">
+      <i class="fa-solid fa-volume-mute"></i>
+    </div>
     <i class="fa-regular fa-copyright"></i> 2026 World Life 服务器 by RXC | 晋
   </footer>
 
-  <!-- 模态框 -->
   <div class="modal-overlay" id="modal-overlay">
     <div class="modal">
       <button class="close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
@@ -593,13 +600,64 @@
 
   <script>
     (function() {
-      // ---------- 数据 ----------
+      // ---------- 背景音乐：简单开关，支持自动恢复播放状态 ----------
+      const audio = new Audio('bgm.mp3');
+      audio.loop = true;
+      audio.preload = 'auto';
+      
+      // 读取保存的状态（默认静音）
+      let savedMuted = localStorage.getItem('bgmMuted');
+      let isMuted = (savedMuted !== null) ? (savedMuted === 'true') : true;
+      
+      const musicBtn = document.getElementById('musicToggle');
+      const iconElem = musicBtn.querySelector('i');
+      
+      // 应用状态
+      audio.muted = isMuted;
+      if (!isMuted) {
+        iconElem.className = 'fa-solid fa-volume-up';
+        // 尝试自动播放（可能被浏览器阻止，则注册一次全局点击来播放）
+        let playPromise = audio.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(error => {
+            console.log("自动播放被阻止，将等待用户首次点击");
+            // 注册一次性全局点击事件，用户点击页面任何地方时播放（仅当状态为有声）
+            const playOnFirstClick = () => {
+              if (!isMuted && audio.paused) {
+                audio.play().catch(e => console.log("播放失败"));
+              }
+              document.body.removeEventListener('click', playOnFirstClick);
+            };
+            document.body.addEventListener('click', playOnFirstClick, { once: true });
+          });
+        }
+      } else {
+        iconElem.className = 'fa-solid fa-volume-mute';
+      }
+      
+      // 点击切换
+      musicBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isMuted = !isMuted;
+        audio.muted = isMuted;
+        if (!isMuted) {
+          iconElem.className = 'fa-solid fa-volume-up';
+          audio.play().catch(err => console.log("播放失败", err));
+        } else {
+          iconElem.className = 'fa-solid fa-volume-mute';
+        }
+        localStorage.setItem('bgmMuted', isMuted);
+      });
+      
+      // 确保在刷新或重新打开时，如果是有声状态但实际未播放（因策略阻止），用户点击页面任意位置启动
+      // 已通过上面的 playOnFirstClick 处理。另外监听页面可见性变化可选，暂不赘述。
+      
+      // ---------- 以下为原有网站功能，完全保持不变 ----------
       const diaryEntries = [
         { file: 'date1.html', date: '2025-08-06', desc: '测试日报。' },
         { file: 'date2.html', date: '2025-08-05', desc: '服务器维护，优化了地图加载速度。' }
       ];
 
-      // ---------- 密码提示动态变色 ----------
       function setupPasswordHint(passwordId, hintSelector) {
         const pwdInput = document.getElementById(passwordId);
         if (!pwdInput) return;
@@ -614,7 +672,6 @@
         });
       }
 
-      // ---------- 页面生成函数 ----------
       function getHomePage() {
   return `<section><h2><i class="fa-solid fa-hand-wave"></i> 欢迎来到 World Life 服务器</h2><p>这是一个虚拟的 Minecraft 世界，你可以加入或创建虚拟的国家，扮演多种角色~</p></section>` +
          `<section><h2><i class="fa-solid fa-map"></i> 世界地图玩法</h2><p>在1:1000比例的世界地图中，可加入或创建国家~</p></section>` +
@@ -678,7 +735,6 @@
           </section>`;
       }
 
-      // 页面内容映射
       const pages = {
         home: getHomePage(),
         server: `<section><h2><i class="fa-solid fa-circle-info"></i> 如何加入服务器</h2><p>加入我们的QQ群：749664574~</p></section>
@@ -688,10 +744,9 @@
          </section>`,
         commands: `<section><h2><i class="fa-solid fa-terminal"></i> 常用指令列表</h2><ul><li>/reg 密码 密码：注册</li><li>/login 密码：登录</li><li>/tpa 玩家名：传送请求</li><li>/tpahere 玩家名：请求对方传送</li><li>/back：回到死亡/传送点</li><li>/co i：启用/关闭检查器</li></ul></section>`,
         daily: getDailyPage(),
-        login: ''  // 动态填充
+        login: ''
       };
 
-      // ---------- 辅助函数 ----------
       function updateUserInfo() {
         const user = localStorage.getItem('currentUser');
         const userInfo = document.getElementById('user-info');
@@ -707,7 +762,6 @@
         }
       }
 
-      // 切换页面动画
       function animateContent(html) {
         const main = document.getElementById('content');
         main.classList.add('fade-out');
@@ -715,7 +769,6 @@
           main.innerHTML = html;
           main.classList.remove('fade-out');
           main.classList.add('fade-in');
-          // 如果当前是登录页且未登录，设置密码提示监听
           if (!localStorage.getItem('currentUser')) {
             setTimeout(() => {
               setupPasswordHint('register-password', '#password-hint');
@@ -739,7 +792,6 @@
         }
       };
 
-      // 快速切换登录/注册
       window.switchToLogin = function() {
         const loginNav = document.querySelector('nav a[data-page="login"]');
         if (loginNav) loginNav.click();
@@ -749,7 +801,6 @@
         if (loginNav) loginNav.click();
       };
 
-      // 注销（阻止默认行为）
       window.logoutUser = function(e) {
         if (e) e.preventDefault();
         localStorage.removeItem('currentUser');
@@ -759,7 +810,6 @@
         document.querySelector('nav a[data-page="home"]').click();
       };
 
-      // 模态框
       window.showModal = function(title, msg) {
         document.getElementById('modal-title').textContent = title;
         document.getElementById('modal-message').textContent = msg;
@@ -774,7 +824,6 @@
         if (e.target === this) closeModal();
       });
 
-      // 登录
       window.handleLogin = function(e) {
         e.preventDefault();
         const user = document.getElementById('login-username').value;
@@ -790,7 +839,6 @@
         }
       };
 
-      // 注册（带滑块重置）
       window.handleRegister = function(e) {
         e.preventDefault();
         const user = document.getElementById('register-username').value;
@@ -831,7 +879,6 @@
         }, 300);
       };
 
-      // 密码可见切换
       window.togglePassword = function(id, element) {
         const input = document.getElementById(id);
         const icon = element.querySelector('i');
@@ -846,7 +893,6 @@
         }
       };
 
-      // ---------- 滑块验证（触摸支持 + 重置）----------
       function initSliderCaptcha() {
         const thumb = document.getElementById('slider-thumb');
         const track = document.getElementById('slider');
@@ -947,7 +993,6 @@
         resetThisSlider();
       }
 
-      // 初始加载
       window.addEventListener("DOMContentLoaded", function() {
         const navLinks = document.querySelectorAll('nav a');
         navLinks.forEach(link => {
