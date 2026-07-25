@@ -311,7 +311,7 @@
 
     <script>
         (function() {
-            // 颜色主题方案（与主站完全一致）
+            // 颜色主题方案（与主站完全一致，已新增“玻璃”选项）
             const colorSchemes = {
                 default: {
                     '--card-bg-light': 'rgba(255, 255, 255, 0.65)',
@@ -344,6 +344,14 @@
                     '--card-border-dark': 'rgba(140, 85, 50, 0.7)',
                     '--text-color-light': '#3e270b',
                     '--text-color-dark': '#fef3e4'
+                },
+                glass: {
+                    '--card-bg-light': 'rgba(255, 255, 255, 0.05)',
+                    '--card-bg-dark': 'rgba(0, 0, 0, 0.05)',
+                    '--card-border-light': 'rgba(255, 255, 255, 0.15)',
+                    '--card-border-dark': 'rgba(0, 0, 0, 0.15)',
+                    '--text-color-light': '#111',
+                    '--text-color-dark': '#f8fafc'
                 }
             };
 
@@ -356,7 +364,7 @@
                 }
             }
 
-            // 读取浏览器缓存中的颜色设置
+            // 读取浏览器缓存中的颜色设置（与主站共享 localStorage）
             const savedTheme = localStorage.getItem('themeColor') || 'default';
             applyColorScheme(savedTheme);
         })();
