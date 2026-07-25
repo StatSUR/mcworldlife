@@ -1,681 +1,945 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>World Life 服务器官网</title>
-  <link rel="icon" href="WL图标(Server64x).png" type="image/png" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    /* ===== 基础重置 ===== */
-    * { margin:0; padding:0; box-sizing:border-box; }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Life 服务器官网</title>
+    <link rel="icon" href="WL LOGO.png" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ===== 基础重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      background: #fff;
-      color: #111;
-      transition: background 0.3s, color 0.3s;
-    }
+        :root {
+            /* 默认颜色变量 */
+            --card-bg-light: rgba(255, 255, 255, 0.65);
+            --card-bg-dark: rgba(0, 0, 0, 0.65);
+            --card-border-light: rgba(255, 255, 255, 0.8);
+            --card-border-dark: rgba(0, 0, 0, 0.6);
+            --text-color-light: #111;
+            --text-color-dark: #f8fafc;
+        }
 
-    @media (prefers-color-scheme: dark) {
-      body { background: #212121; color: #f8fafc; }
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: url('BGPhoto Light.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-color-light);
+            transition: background 0.3s, color 0.3s;
+            padding-top: 90px;
+            padding-bottom: 90px;
+            -webkit-user-drag: none;
+            user-drag: none;
+            --card-bg: var(--card-bg-light);
+            --card-border: var(--card-border-light);
+            --text-color: var(--text-color-light);
+        }
 
-    header, footer {
-      background: linear-gradient(90deg, #0ea5e9, #6366f1);
-      color: #fff;
-      padding: 1rem 2rem;
-      width: 100%;
-      z-index: 100;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-image: url('BGPhoto Dark.png');
+                color: var(--text-color-dark);
+                --card-bg: var(--card-bg-dark);
+                --card-border: var(--card-border-dark);
+                --text-color: var(--text-color-dark);
+            }
+        }
 
-    header {
-      display: flex;
-      align-items: center;
-      position: relative;
-      backdrop-filter: blur(4px);
-    }
+        /* ===== 顶部悬浮区域 ===== */
+        header {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+            background: transparent;
+            box-shadow: none;
+        }
 
-    .title {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: clamp(1.2rem, 2vw, 1.6rem);
-      font-weight: bold;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.2), 0 0 10px rgba(255,255,255,0.3);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+        /* 所有卡片的统一毛玻璃背景与文字颜色，描边统一加粗，圆角丝滑 */
+        .top-card,
+        .music-btn,
+        .copyright-text,
+        .settings-card,
+        section {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: var(--text-color);
+            border-radius: 24px;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
 
-    .title img {
-      width: 1.6em;
-      height: 1.6em;
-      vertical-align: middle;
-      border-radius: 4px;
-    }
+        @media (prefers-color-scheme: dark) {
+            .top-card,
+            .music-btn,
+            .copyright-text,
+            .settings-card,
+            section {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            }
+        }
 
-    .user-info {
-      font-weight: bold;
-      padding: 0.3rem 0.8rem;
-      border-radius: 30px;
-      background: rgba(255,255,255,0.2);
-      backdrop-filter: blur(4px);
-      cursor: default;
-      transition: background 0.3s;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
+        .user-info:hover,
+        nav.top-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+        }
 
-    @media (prefers-color-scheme: dark) {
-      .user-info { background: rgba(255,255,255,0.1); }
-    }
+        .music-btn:hover,
+        .copyright-text:hover,
+        .settings-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+        }
 
-    nav {
-      margin-left: auto;
-      display: flex;
-      gap: clamp(0.6rem, 1.8vw, 1.2rem);
-    }
+        .top-card,
+        .music-btn,
+        .copyright-text,
+        .settings-card {
+            height: 70px;
+            min-height: 70px;
+            box-sizing: border-box;
+            padding: 0 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
 
-    nav a {
-      color: #fff;
-      text-decoration: none;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-      position: relative;
-      padding: 0.4rem 0;
-      letter-spacing: 0.3px;
-    }
+        .user-info {
+            font-weight: bold;
+            gap: 6px;
+            cursor: default;
+        }
 
-    nav a::after {
-      content: "";
-      position: absolute;
-      bottom: -2px;
-      left: 0;
-      width: 0;
-      height: 2px;
-      background: #facc15;
-      transition: width 0.3s ease;
-    }
+        .title {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: clamp(1.2rem, 2vw, 1.6rem);
+            font-weight: bold;
+            gap: 6px;
+            z-index: 3;
+        }
 
-    nav a:hover::after,
-    nav a.active::after {
-      width: 100%;
-    }
+        .title img {
+            width: 1.6em;
+            height: 1.6em;
+            vertical-align: middle;
+            border-radius: 4px;
+        }
 
-    nav a:hover,
-    nav a.active {
-      color: #facc15;
-      transform: translateY(-2px);
-    }
+        nav {
+            display: flex;
+            gap: clamp(0.6rem, 1.8vw, 1.2rem);
+            z-index: 2;
+        }
 
-    main {
-      flex: 1;
-      padding: clamp(1rem, 3vw, 2rem);
-      width: 100%;
-      max-width: 1200px;
-      margin: 0 auto;
-      transition: opacity 0.4s ease, transform 0.4s ease;
-    }
+        nav a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            padding: 0.4rem 0;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
 
-    main.fade-out {
-      opacity: 0;
-      transform: translateY(10px);
-    }
+        nav a::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #facc15;
+            transition: width 0.3s ease;
+        }
 
-    main.fade-in {
-      opacity: 1;
-      transform: translateY(0);
-    }
+        nav a:hover::after,
+        nav a.active::after {
+            width: 100%;
+        }
 
-    section {
-      background: #f9fafb;
-      padding: clamp(1.2rem, 3vw, 2rem);
-      margin: clamp(1rem, 3vw, 2rem) auto;
-      border-radius: 18px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-      width: min(90%, 800px);
-      transition: transform 0.3s, box-shadow 0.3s;
-      animation: fadeUp 0.5s ease;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
+        nav a:hover,
+        nav a.active {
+            color: #facc15;
+            transform: translateY(-2px);
+        }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+        /* ===== 主内容区 ===== */
+        main {
+            flex: 1;
+            padding: clamp(1rem, 3vw, 2rem);
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
 
-    section:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    }
+        main.fade-out {
+            opacity: 0;
+            transform: translateY(10px);
+        }
 
-    @media (prefers-color-scheme: dark) {
-      section {
-        background: #1e293b;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-      }
-      section:hover {
-        box-shadow: 0 18px 40px rgba(0,0,0,0.7);
-      }
-    }
+        main.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-    h2 {
-      margin-bottom: 1rem;
-      color: #1e40af;
-      font-size: 1.8rem;
-      border-left: 6px solid #0ea5e9;
-      padding-left: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        section {
+            padding: clamp(1.2rem, 3vw, 2rem);
+            margin: clamp(1rem, 3vw, 2rem) auto;
+            width: min(90%, 800px);
+            animation: fadeUp 0.5s ease;
+        }
 
-    @media (prefers-color-scheme: dark) {
-      h2 { color: #facc15; border-left-color: #8b5cf6; }
-    }
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    .team {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-    }
+        section:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
 
-    .team span {
-      padding: 0.6rem 1.4rem;
-      border-radius: 40px;
-      font-weight: 500;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      transition: all 0.3s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.1rem;
-    }
+        @media (prefers-color-scheme: dark) {
+            section:hover {
+                box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+            }
+        }
 
-    .team span:hover {
-      transform: scale(1.05) translateY(-3px);
-      box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-    }
+        h2 {
+            margin-bottom: 1rem;
+            color: #1e40af;
+            font-size: 1.8rem;
+            border-left: 6px solid #0ea5e9;
+            padding-left: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .role-owner {
-      background: #fbbf24;
-      color: #1e293b;
-      border: 2px solid #f59e0b;
-    }
-    .role-builder {
-      background: #60a5fa;
-      color: #0F172A;
-      border: 2px solid #3b82f6;
-    }
-    .role-admin {
-      background: #a78bfa;
-      color: #0F172A;
-      border: 2px solid #8b5cf6;
-    }
-    .role-player {
-      background: #34d399;
-      color: #064e3b;
-      border: 2px solid #10b981;
-    }
+        @media (prefers-color-scheme: dark) {
+            h2 {
+                color: #facc15;
+                border-left-color: #8b5cf6;
+            }
+        }
 
-    @media (prefers-color-scheme: dark) {
-      .role-owner { background: #b45309; color: #fef3c7; border-color: #fbbf24; }
-      .role-builder { background: #1e40af; color: #dbeafe; border-color: #60a5fa; }
-      .role-admin { background: #5b21b6; color: #ede9fe; border-color: #a78bfa; }
-      .role-player { background: #065f46; color: #d1fae5; border-color: #34d399; }
-    }
+        .team {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
 
-    form {
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-    }
+        .team span {
+            padding: 0.6rem 1.4rem;
+            border-radius: 40px;
+            font-weight: 500;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.1rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 4px solid transparent;
+            border-left: 6px solid transparent;
+        }
 
-    .input-group {
-      position: relative;
-    }
+        .role-owner {
+            background: rgba(251, 191, 36, 0.8);
+            border-color: #fbbf24;
+            border-left-color: #fbbf24;
+            border-left-width: 6px;
+            color: #1e293b;
+        }
+        .role-builder {
+            background: rgba(96, 165, 250, 0.8);
+            border-color: #60a5fa;
+            border-left-color: #60a5fa;
+            border-left-width: 6px;
+            color: #0F172A;
+        }
+        .role-admin {
+            background: rgba(167, 139, 250, 0.8);
+            border-color: #a78bfa;
+            border-left-color: #a78bfa;
+            border-left-width: 6px;
+            color: #0F172A;
+        }
+        .role-player {
+            background: rgba(52, 211, 153, 0.8);
+            border-color: #34d399;
+            border-left-color: #34d399;
+            border-left-width: 6px;
+            color: #064e3b;
+        }
 
-    input, button {
-      padding: 0.8rem 1rem;
-      border: none;
-      border-radius: 12px;
-      font-size: 1rem;
-      width: 100%;
-      transition: all 0.2s;
-    }
+        @media (prefers-color-scheme: dark) {
+            .role-owner { background: rgba(251, 191, 36, 0.8); }
+            .role-builder { background: rgba(96, 165, 250, 0.8); }
+            .role-admin { background: rgba(167, 139, 250, 0.8); }
+            .role-player { background: rgba(52, 211, 153, 0.8); }
+        }
 
-    input {
-      background: #fff;
-      border: 2px solid #e2e8f0;
-      color: #111;
-      outline: none;
-    }
+        .team span:hover {
+            transform: scale(1.05) translateY(-3px);
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
+        }
 
-    input:focus {
-      border-color: #0ea5e9;
-      box-shadow: 0 0 0 3px rgba(14,165,233,0.2);
-    }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+        .input-group {
+            position: relative;
+        }
 
-    button {
-      background: linear-gradient(90deg, #3b82f6, #6366f1);
-      color: #fff;
-      cursor: pointer;
-      font-weight: 600;
-      border: none;
-      box-shadow: 0 4px 10px rgba(59,130,246,0.3);
-      position: relative;
-      overflow: hidden;
-    }
+        input,
+        button {
+            padding: 0.8rem 1rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            width: 100%;
+            transition: all 0.2s;
+        }
 
-    button::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.4);
-      transform: translate(-50%, -50%);
-      transition: width 0.3s, height 0.3s;
-    }
+        input {
+            background: #fff;
+            border: 2px solid #e2e8f0;
+            color: #111;
+            outline: none;
+        }
 
-    button:active::after {
-      width: 200px;
-      height: 200px;
-    }
+        input:focus {
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+        }
 
-    button:hover {
-      opacity: 0.9;
-      transform: scale(1.02);
-      box-shadow: 0 6px 14px rgba(59,130,246,0.4);
-    }
+        button {
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
 
-    .toggle-pw {
-      position: absolute;
-      top: 50%;
-      right: 1rem;
-      transform: translateY(-50%);
-      cursor: pointer;
-      font-size: 1.2rem;
-      color: #64748b;
-      transition: color 0.2s;
-    }
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.3s, height 0.3s;
+        }
 
-    .toggle-pw:hover {
-      color: #0ea5e9;
-    }
+        button:active::after {
+            width: 200px;
+            height: 200px;
+        }
+        button:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+            box-shadow: 0 6px 14px rgba(59, 130, 246, 0.4);
+        }
 
-    @media (prefers-color-scheme: dark) {
-      input {
-        background: #334155;
-        color: #f8fafc;
-        border-color: #475569;
-      }
-      input:focus { border-color: #8b5cf6; box-shadow: 0 0 0 3px rgba(139,92,246,0.3); }
-      button { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
-      .toggle-pw { color: #94a3b8; }
-      .toggle-pw:hover { color: #facc15; }
-    }
+        .toggle-pw {
+            position: absolute;
+            top: 50%;
+            right: 1rem;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 1.2rem;
+            color: #64748b;
+            transition: color 0.2s;
+        }
 
-    span.hint {
-      font-size: 0.9rem;
-      color: #64748b;
-      margin-top: -0.5rem;
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      transition: color 0.2s;
-    }
-    span.hint.valid {
-      color: #10b981;
-    }
+        .toggle-pw:hover {
+            color: #0ea5e9;
+        }
 
-    .slider-captcha {
-      user-select: none;
-      width: 100%;
-      margin: 1rem 0 0.5rem;
-      background: #e5e7eb;
-      border-radius: 30px;
-      height: 44px;
-      position: relative;
-      overflow: hidden;
-      border: 2px solid #d1d5db;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-    }
+        @media (prefers-color-scheme: dark) {
+            input {
+                background: #334155;
+                color: #f8fafc;
+                border-color: #475569;
+            }
+            input:focus {
+                border-color: #8b5cf6;
+                box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.3);
+            }
+            button {
+                background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            }
+            .toggle-pw {
+                color: #94a3b8;
+            }
+            .toggle-pw:hover {
+                color: #facc15;
+            }
+        }
 
-    .slider-track {
-      position: absolute;
-      height: 100%;
-      width: 100%;
-      background: #d1d5db;
-    }
+        span.hint {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-top: -0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+        span.hint.valid {
+            color: #10b981;
+        }
 
-    .slider-fill {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      background: #10b981;
-      z-index: 1;
-      width: 0;
-      border-radius: 30px 0 0 30px;
-      transition: width 0.1s ease;
-    }
+        .slider-captcha {
+            user-select: none;
+            width: 100%;
+            margin: 1rem 0 0.5rem;
+            background: #e5e7eb;
+            border-radius: 30px;
+            height: 44px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #d1d5db;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-    .slider-thumb {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 44px;
-      height: 44px;
-      background: #3b82f6;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 30px;
-      cursor: grab;
-      transition: background 0.2s, box-shadow 0.2s, left 0.1s ease, transform 0.2s;
-      z-index: 2;
-      font-size: 1.2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      background-clip: padding-box;
-      border: 2px solid transparent;
-    }
+        .slider-track {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: #d1d5db;
+        }
+        .slider-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #10b981;
+            z-index: 1;
+            width: 0;
+            border-radius: 30px 0 0 30px;
+            transition: width 0.1s ease;
+        }
 
-    .slider-thumb:active { cursor: grabbing; }
+        .slider-thumb {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 44px;
+            height: 44px;
+            background: #3b82f6;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            cursor: grab;
+            transition: background 0.2s, box-shadow 0.2s, left 0.1s ease, transform 0.2s;
+            z-index: 2;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            background-clip: padding-box;
+            border: 2px solid transparent;
+        }
 
-    .slider-success {
-      background: #10b981 !important;
-      cursor: default !important;
-      box-shadow: 0 0 0 3px rgba(16,185,129,0.3);
-      animation: pop 0.3s ease;
-    }
+        .slider-thumb:active {
+            cursor: grabbing;
+        }
+        .slider-success {
+            background: #10b981 !important;
+            cursor: default !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+            animation: pop 0.3s ease;
+        }
 
-    @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.2); }
-      100% { transform: scale(1); }
-    }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
 
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.6);
-      backdrop-filter: blur(5px);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-      animation: fadeIn 0.2s;
-    }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.2s;
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-    }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    .modal {
-      position: relative;
-      background: #fff;
-      padding: 2rem 2rem 1.8rem;
-      border-radius: 32px;
-      width: min(90%, 400px);
-      box-shadow: 0 25px 50px rgba(0,0,0,0.4);
-      display: flex;
-      flex-direction: column;
-      text-align: left;
-      animation: scaleIn 0.3s ease;
-    }
+        .modal {
+            position: relative;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 2rem 2rem 1.8rem;
+            border-radius: 32px;
+            width: min(90%, 400px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            animation: scaleIn 0.3s ease;
+            border: 2px solid var(--card-border);
+            color: var(--text-color);
+        }
 
-    @keyframes scaleIn {
-      from { transform: scale(0.9); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
+        @keyframes scaleIn {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
 
-    .modal h3 {
-      margin-bottom: 1rem;
-      color: #1e40af;
-      font-size: 1.6rem;
-      padding-right: 1.5rem;
-    }
+        .modal h3 {
+            margin-bottom: 1rem;
+            color: #1e40af;
+            font-size: 1.6rem;
+            padding-right: 1.5rem;
+        }
+        .modal p {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
 
-    .modal p { font-size: 1.1rem; line-height: 1.5; }
+        .modal button.close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: #64748b;
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            box-shadow: none;
+        }
 
-    .modal button.close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 50%;
-      color: #64748b;
-      transition: background 0.2s, color 0.2s, transform 0.2s;
-      box-shadow: none;
-    }
+        .modal button.close:hover {
+            background: #f1f5f9;
+            color: #0F172A;
+            transform: rotate(90deg);
+        }
 
-    .modal button.close:hover {
-      background: #f1f5f9;
-      color: #0F172A;
-      transform: rotate(90deg);
-    }
+        @media (prefers-color-scheme: dark) {
+            .modal h3 {
+                color: #facc15;
+            }
+            .modal button.close {
+                color: #94a3b8;
+            }
+            .modal button.close:hover {
+                background: #334155;
+                color: #f8fafc;
+            }
+        }
 
-    @media (prefers-color-scheme: dark) {
-      .modal {
-        background: #1e293b;
-        color: #f8fafc;
-      }
-      .modal h3 { color: #facc15; }
-      .modal button.close {
-        color: #94a3b8;
-      }
-      .modal button.close:hover {
-        background: #334155;
-        color: #f8fafc;
-      }
-    }
+        ul { list-style: none; }
+        li {
+            margin: 0.8rem 0;
+            padding: 0.8rem 1.2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 16px;
+            transition: background 0.2s, transform 0.2s;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        li:hover {
+            background: var(--card-bg);
+            transform: translateX(5px);
+        }
+        li a {
+            color: #0ea5e9;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        li a:hover {
+            text-decoration: underline;
+        }
 
-    ul { list-style: none; }
-    li {
-      margin: 0.8rem 0;
-      padding: 0.8rem 1.2rem;
-      background: #f1f5f9;
-      border-radius: 16px;
-      transition: background 0.2s, transform 0.2s;
-    }
-    li:hover {
-      background: #e2e8f0;
-      transform: translateX(5px);
-    }
-    li a {
-      color: #0ea5e9;
-      font-weight: 600;
-      text-decoration: none;
-    }
-    li a:hover { text-decoration: underline; }
-    @media (prefers-color-scheme: dark) {
-      li { background: #334155; }
-      li:hover { background: #475569; }
-      li a { color: #8b5cf6; }
-    }
+        @media (prefers-color-scheme: dark) {
+            li a {
+                color: #8b5cf6;
+            }
+        }
 
-    footer {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      position: relative;
-    }
+        /* ===== 设置面板样式 ===== */
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1100;
+        }
+        .settings-panel-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 2rem;
+            width: min(90%, 360px);
+            border: 2px solid var(--card-border);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            color: var(--text-color);
+        }
+        .color-options {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+        .color-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-btn.active {
+            border-color: #facc15;
+            transform: scale(1.1);
+        }
+        .color-btn.default {
+            background: linear-gradient(135deg, #ffffff 50%, #000000 50%);
+        }
+        .color-btn.blue {
+            background: linear-gradient(135deg, #b0d4f1 50%, #1a3b5c 50%);
+        }
+        .color-btn.pink {
+            background: linear-gradient(135deg, #f8c8d4 50%, #6b2b3a 50%);
+        }
+        .color-btn.orange {
+            background: linear-gradient(135deg, #fde2c3 50%, #7b4a2c 50%);
+        }
 
-    /* ===== 简单的音量图标（无滑块） ===== */
-    .music-btn {
-      position: absolute;
-      left: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 1.3rem;
-      color: #fff;
-      cursor: pointer;
-      transition: filter 0.2s;
-      z-index: 200;
-    }
-    .music-btn:hover {
-      filter: drop-shadow(0 0 6px rgba(0,0,0,0.5));
-    }
+        /* ===== 底部悬浮区域 ===== */
+        footer {
+            position: fixed;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: auto;
+            background: transparent;
+            box-shadow: none;
+        }
 
-    .quick-login {
-      text-align: center;
-      margin-top: 0.5rem;
-    }
-    .quick-login a {
-      color: #3b82f6;
-      text-decoration: none;
-      font-size: 0.9rem;
-      transition: color 0.2s;
-      cursor: pointer;
-    }
-    .quick-login a:hover {
-      color: #6366f1;
-      text-decoration: underline;
-    }
-    @media (prefers-color-scheme: dark) {
-      .quick-login a { color: #8b5cf6; }
-      .quick-login a:hover { color: #facc15; }
-    }
-  </style>
+        .music-btn,
+        .copyright-text,
+        .settings-card {
+            padding: 0.9rem 1.5rem;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        .music-btn {
+            cursor: pointer;
+            font-size: 1.3rem;
+            border: none;
+            outline: none;
+            min-width: 65px;
+            justify-content: center;
+        }
+
+        .music-btn:hover {
+            filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
+        }
+
+        .copyright-text {
+            gap: 6px;
+            justify-content: center;
+        }
+
+        .settings-card {
+            cursor: pointer;
+            font-size: 1.3rem;
+            justify-content: center;
+            min-width: 55px;
+        }
+
+        .quick-login {
+            text-align: center;
+            margin-top: 0.5rem;
+        }
+        .quick-login a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .quick-login a:hover {
+            color: #6366f1;
+            text-decoration: underline;
+        }
+        @media (prefers-color-scheme: dark) {
+            .quick-login a {
+                color: #8b5cf6;
+            }
+            .quick-login a:hover {
+                color: #facc15;
+            }
+        }
+    </style>
 </head>
-<body>
-  <header>
-    <div class="user-info" id="user-info"><i class="fa-solid fa-user"></i> 未登录</div>
-    <div class="title">
-      <img src="WL图标白色(Server64x).png" alt="WL图标">
-      World Life 官方网站
+<body oncontextmenu="return false;">
+    <header>
+        <div class="user-info top-card" id="user-info"><i class="fa-solid fa-user"></i> 未登录</div>
+        <div class="title top-card">
+            <img src="WL LOGO.png" alt="WL图标">
+            World Life 官方网站
+        </div>
+        <nav class="top-card">
+            <a data-page="home"><i class="fa-solid fa-house"></i> 首页</a>
+            <a data-page="server"><i class="fa-solid fa-server"></i> 服务器</a>
+            <a data-page="commands"><i class="fa-solid fa-terminal"></i> 指令</a>
+            <a data-page="daily"><i class="fa-solid fa-newspaper"></i> 日报</a>
+            <a id="login-register-nav" data-page="login"><i class="fa-solid fa-right-to-bracket"></i> 登录/注册</a>
+        </nav>
+    </header>
+
+    <main id="content"></main>
+
+    <footer>
+        <div class="music-btn" id="musicToggle">
+            <i class="fa-solid fa-volume-mute"></i>
+        </div>
+        <div class="copyright-text">
+            <i class="fa-regular fa-copyright"></i> 2026 World Life 服务器 by RXC | 晋
+        </div>
+        <div class="settings-card" id="settingsCard">
+            <i class="fa-solid fa-gear"></i>
+        </div>
+    </footer>
+
+    <!-- 设置面板 -->
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-panel-content">
+            <h3 style="margin-bottom:1rem; text-align:center;">主题颜色</h3>
+            <div class="color-options">
+                <div class="color-btn default active" data-color="default"></div>
+                <div class="color-btn blue" data-color="blue"></div>
+                <div class="color-btn pink" data-color="pink"></div>
+                <div class="color-btn orange" data-color="orange"></div>
+            </div>
+            <button id="closeSettingsBtn" style="margin-top:1rem;">关闭</button>
+        </div>
     </div>
-    <nav>
-      <a data-page="home"><i class="fa-solid fa-house"></i> 首页</a>
-      <a data-page="server"><i class="fa-solid fa-server"></i> 服务器</a>
-      <a data-page="commands"><i class="fa-solid fa-terminal"></i> 指令</a>
-      <a data-page="daily"><i class="fa-solid fa-newspaper"></i> 日报</a>
-      <a id="login-register-nav" data-page="login"><i class="fa-solid fa-right-to-bracket"></i> 登录/注册</a>
-    </nav>
-  </header>
 
-  <main id="content"></main>
-
-  <footer>
-    <div class="music-btn" id="musicToggle">
-      <i class="fa-solid fa-volume-mute"></i>
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+            <button class="close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h3 id="modal-title"></h3>
+            <p id="modal-message"></p>
+        </div>
     </div>
-    <i class="fa-regular fa-copyright"></i> 2026 World Life 服务器 by RXC | 晋
-  </footer>
 
-  <div class="modal-overlay" id="modal-overlay">
-    <div class="modal">
-      <button class="close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
-      <h3 id="modal-title"></h3>
-      <p id="modal-message"></p>
-    </div>
-  </div>
+    <script>
+        (function() {
+            // ---------- 移动设备检测（立即执行，尽早跳转） ----------
+            if (/Mobi|Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth < 768) {
+                window.location.replace('index-moble.html');
+                return; // 停止后续脚本执行
+            }
 
-  <script>
-    (function() {
-      // ---------- 背景音乐：简单开关，支持自动恢复播放状态 ----------
-      const audio = new Audio('bgm.mp3');
-      audio.loop = true;
-      audio.preload = 'auto';
-      
-      // 读取保存的状态（默认静音）
-      let savedMuted = localStorage.getItem('bgmMuted');
-      let isMuted = (savedMuted !== null) ? (savedMuted === 'true') : true;
-      
-      const musicBtn = document.getElementById('musicToggle');
-      const iconElem = musicBtn.querySelector('i');
-      
-      // 应用状态
-      audio.muted = isMuted;
-      if (!isMuted) {
-        iconElem.className = 'fa-solid fa-volume-up';
-        // 尝试自动播放（可能被浏览器阻止，则注册一次全局点击来播放）
-        let playPromise = audio.play();
-        if (playPromise !== undefined) {
-          playPromise.catch(error => {
-            console.log("自动播放被阻止，将等待用户首次点击");
-            // 注册一次性全局点击事件，用户点击页面任何地方时播放（仅当状态为有声）
-            const playOnFirstClick = () => {
-              if (!isMuted && audio.paused) {
-                audio.play().catch(e => console.log("播放失败"));
-              }
-              document.body.removeEventListener('click', playOnFirstClick);
+            // ---------- 背景音乐 ----------
+            const audio = new Audio('bgm.mp3');
+            audio.loop = true;
+            audio.preload = 'auto';
+            let savedMuted = localStorage.getItem('bgmMuted');
+            let isMuted = (savedMuted !== null) ? (savedMuted === 'true') : true;
+            const musicBtn = document.getElementById('musicToggle');
+            const iconElem = musicBtn.querySelector('i');
+            audio.muted = isMuted;
+            if (!isMuted) {
+                iconElem.className = 'fa-solid fa-volume-up';
+                audio.play().catch(() => {
+                    document.body.addEventListener('click', function playOnce() {
+                        if (!isMuted && audio.paused) audio.play();
+                        document.body.removeEventListener('click', playOnce);
+                    }, { once: true });
+                });
+            } else {
+                iconElem.className = 'fa-solid fa-volume-mute';
+            }
+            musicBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                isMuted = !isMuted;
+                audio.muted = isMuted;
+                iconElem.className = isMuted ? 'fa-solid fa-volume-mute' : 'fa-solid fa-volume-up';
+                if (!isMuted) audio.play().catch(err => console.log("播放失败", err));
+                localStorage.setItem('bgmMuted', isMuted);
+            });
+
+            // ---------- 颜色主题管理 ----------
+            const colorSchemes = {
+                default: {
+                    '--card-bg-light': 'rgba(255, 255, 255, 0.65)',
+                    '--card-bg-dark': 'rgba(0, 0, 0, 0.65)',
+                    '--card-border-light': 'rgba(255, 255, 255, 0.8)',
+                    '--card-border-dark': 'rgba(0, 0, 0, 0.6)',
+                    '--text-color-light': '#111',
+                    '--text-color-dark': '#f8fafc'
+                },
+                blue: {
+                    '--card-bg-light': 'rgba(190, 215, 240, 0.65)',
+                    '--card-bg-dark': 'rgba(30, 50, 80, 0.65)',
+                    '--card-border-light': 'rgba(150, 190, 230, 0.9)',
+                    '--card-border-dark': 'rgba(40, 60, 90, 0.7)',
+                    '--text-color-light': '#0a192f',
+                    '--text-color-dark': '#e2e8f0'
+                },
+                pink: {
+                    '--card-bg-light': 'rgba(245, 200, 210, 0.65)',
+                    '--card-bg-dark': 'rgba(100, 40, 50, 0.65)',
+                    '--card-border-light': 'rgba(235, 170, 185, 0.9)',
+                    '--card-border-dark': 'rgba(120, 50, 60, 0.7)',
+                    '--text-color-light': '#3a0a12',
+                    '--text-color-dark': '#fde8ec'
+                },
+                orange: {
+                    '--card-bg-light': 'rgba(250, 225, 195, 0.65)',
+                    '--card-bg-dark': 'rgba(120, 70, 40, 0.65)',
+                    '--card-border-light': 'rgba(240, 190, 140, 0.9)',
+                    '--card-border-dark': 'rgba(140, 85, 50, 0.7)',
+                    '--text-color-light': '#3e270b',
+                    '--text-color-dark': '#fef3e4'
+                }
             };
-            document.body.addEventListener('click', playOnFirstClick, { once: true });
-          });
-        }
-      } else {
-        iconElem.className = 'fa-solid fa-volume-mute';
-      }
-      
-      // 点击切换
-      musicBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isMuted = !isMuted;
-        audio.muted = isMuted;
-        if (!isMuted) {
-          iconElem.className = 'fa-solid fa-volume-up';
-          audio.play().catch(err => console.log("播放失败", err));
-        } else {
-          iconElem.className = 'fa-solid fa-volume-mute';
-        }
-        localStorage.setItem('bgmMuted', isMuted);
-      });
-      
-      // 确保在刷新或重新打开时，如果是有声状态但实际未播放（因策略阻止），用户点击页面任意位置启动
-      // 已通过上面的 playOnFirstClick 处理。另外监听页面可见性变化可选，暂不赘述。
-      
-      // ---------- 以下为原有网站功能，完全保持不变 ----------
-      const diaryEntries = [
-        { file: 'date1.html', date: '2025-08-06', desc: '测试日报。' },
-        { file: 'date2.html', date: '2025-08-05', desc: '服务器维护，优化了地图加载速度。' }
-      ];
 
-      function setupPasswordHint(passwordId, hintSelector) {
-        const pwdInput = document.getElementById(passwordId);
-        if (!pwdInput) return;
-        pwdInput.addEventListener('input', function() {
-          const hint = document.querySelector(hintSelector);
-          if (!hint) return;
-          if (this.value.length >= 8) {
-            hint.classList.add('valid');
-          } else {
-            hint.classList.remove('valid');
-          }
-        });
-      }
+            const root = document.documentElement;
+            const settingsPanel = document.getElementById('settingsPanel');
+            const settingsCard = document.getElementById('settingsCard');
+            const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+            const colorBtns = document.querySelectorAll('.color-btn');
 
-      function getHomePage() {
-  return `<section><h2><i class="fa-solid fa-hand-wave"></i> 欢迎来到 World Life 服务器</h2><p>这是一个虚拟的 Minecraft 世界，你可以加入或创建虚拟的国家，扮演多种角色~</p></section>` +
-         `<section><h2><i class="fa-solid fa-map"></i> 世界地图玩法</h2><p>在1:1000比例的世界地图中，可加入或创建国家~</p></section>` +
-         `<section><h2><i class="fa-solid fa-users"></i> 主要人员</h2>
+            function applyColorScheme(schemeName) {
+                const scheme = colorSchemes[schemeName];
+                for (const [key, value] of Object.entries(scheme)) {
+                    root.style.setProperty(key, value);
+                }
+                localStorage.setItem('themeColor', schemeName);
+                colorBtns.forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.color === schemeName);
+                });
+            }
+
+            // 读取保存的主题
+            const savedTheme = localStorage.getItem('themeColor') || 'default';
+            applyColorScheme(savedTheme);
+
+            // 设置面板打开/关闭
+            settingsCard.addEventListener('click', (e) => {
+                e.stopPropagation();
+                settingsPanel.style.display = 'flex';
+            });
+
+            closeSettingsBtn.addEventListener('click', () => {
+                settingsPanel.style.display = 'none';
+            });
+
+            settingsPanel.addEventListener('click', (e) => {
+                if (e.target === settingsPanel) {
+                    settingsPanel.style.display = 'none';
+                }
+            });
+
+            colorBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    applyColorScheme(btn.dataset.color);
+                });
+            });
+
+            // ---------- 原有网站功能 ----------
+            const diaryEntries = [
+                { file: 'date1.html', date: '2025-08-06', desc: '测试日报。' },
+                { file: 'date2.html', date: '2025-08-05', desc: '服务器维护，优化了地图加载速度。' }
+            ];
+
+            function setupPasswordHint(passwordId, hintSelector) {
+                const pwdInput = document.getElementById(passwordId);
+                if (!pwdInput) return;
+                pwdInput.addEventListener('input', function() {
+                    const hint = document.querySelector(hintSelector);
+                    if (!hint) return;
+                    if (this.value.length >= 8) hint.classList.add('valid');
+                    else hint.classList.remove('valid');
+                });
+            }
+
+            function getHomePage() {
+                return `<section><h2><i class="fa-solid fa-hand-wave"></i> 欢迎来到 World Life 服务器</h2><p>这是一个虚拟的 Minecraft 世界，你可以加入或创建虚拟的国家，扮演多种角色~</p></section>` +
+                    `<section><h2><i class="fa-solid fa-map"></i> 世界地图玩法</h2><p>在1:1000比例的世界地图中，可加入或创建国家~</p></section>` +
+                    `<section><h2><i class="fa-solid fa-users"></i> 主要人员</h2>
          <div class="team" style="display: flex; flex-direction: column; gap: 1rem;">
            <span class="role-owner" style="display: flex; width: 100%; align-items: center; justify-content: center; gap: 8px;">
              <img src="ServerPhoto/RXC.jpeg" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
@@ -695,19 +959,19 @@
              <i class="fa-solid fa-users"></i> 玩家团队
            </span>
          </div></section>`;
-}
+            }
 
-      function getDailyPage() {
-        let list = '<ul>';
-        diaryEntries.forEach(entry => {
-          list += `<li><a href="${entry.file}" target="_blank">${entry.date}</a> — ${entry.desc}</li>`;
-        });
-        list += '</ul>';
-        return `<section><h2><i class="fa-regular fa-calendar"></i> 服务器日报列表</h2>${list}</section>`;
-      }
+            function getDailyPage() {
+                let list = '<ul>';
+                diaryEntries.forEach(entry => {
+                    list += `<li><a href="${entry.file}" target="_blank">${entry.date}</a> — ${entry.desc}</li>`;
+                });
+                list += '</ul>';
+                return `<section><h2><i class="fa-regular fa-calendar"></i> 服务器日报列表</h2>${list}</section>`;
+            }
 
-      function getLoginPage() {
-        return `<section><h2><i class="fa-solid fa-right-to-bracket"></i> 请登录</h2>
+            function getLoginPage() {
+                return `<section><h2><i class="fa-solid fa-right-to-bracket"></i> 请登录</h2>
           <form onsubmit="handleLogin(event)">
           <div class="input-group"><input id="login-username" type="text" placeholder="用户名" required minlength="3"/></div>
           <div class="input-group"><input id="login-password" type="password" placeholder="密码" required/>
@@ -733,279 +997,198 @@
           <button type="submit"><i class="fa-solid fa-user-check"></i> 注册</button></form>
           <div class="quick-login"><a onclick="switchToLogin()">已有账号？立即登录</a></div>
           </section>`;
-      }
+            }
 
-      const pages = {
-        home: getHomePage(),
-        server: `<section><h2><i class="fa-solid fa-circle-info"></i> 如何加入服务器</h2><p>加入我们的QQ群：749664574~</p></section>
+            const pages = {
+                home: getHomePage(),
+                server: `<section><h2><i class="fa-solid fa-circle-info"></i> 如何加入服务器</h2><p>加入我们的QQ群：749664574~</p></section>
          <section><h2><i class="fa-solid fa-map"></i> 服务器地图</h2>
          <iframe src="https://earth.motfe.net/overviews/earth_1-1000_overview/unmined.index.html" style="width:100%; height:500px; border:none; border-radius:12px; margin-top:0.5rem; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></iframe>
          <div style="text-align:center; margin-top:1rem;"><a href="https://earth.motfe.net/overviews/earth_1-1000_overview/unmined.index.html" target="_blank" style="color:#3b82f6; text-decoration:none; font-weight:500;"><i class="fa-solid fa-external-link-alt"></i> 查看大图</a></div>
          </section>`,
-        commands: `<section><h2><i class="fa-solid fa-terminal"></i> 常用指令列表</h2><ul><li>/reg 密码 密码：注册</li><li>/login 密码：登录</li><li>/tpa 玩家名：传送请求</li><li>/tpahere 玩家名：请求对方传送</li><li>/back：回到死亡/传送点</li><li>/co i：启用/关闭检查器</li></ul></section>`,
-        daily: getDailyPage(),
-        login: ''
-      };
+                commands: `<section><h2><i class="fa-solid fa-terminal"></i> 常用指令列表</h2><ul><li>/reg 密码 密码：注册</li><li>/login 密码：登录</li><li>/tpa 玩家名：传送请求</li><li>/tpahere 玩家名：请求对方传送</li><li>/back：回到死亡/传送点</li><li>/co i：启用/关闭检查器</li></ul></section>`,
+                daily: getDailyPage(),
+                login: ''
+            };
 
-      function updateUserInfo() {
-        const user = localStorage.getItem('currentUser');
-        const userInfo = document.getElementById('user-info');
-        const loginNav = document.getElementById('login-register-nav');
-        if (user) {
-          userInfo.innerHTML = `<i class="fa-solid fa-user-check"></i> 您好，${user} | <a href="#" onclick="logoutUser(event)">注销</a>`;
-          loginNav.innerHTML = '<i class="fa-solid fa-id-card"></i> 我的信息';
-          pages.login = `<section><h2><i class="fa-solid fa-id-card"></i> 当前用户信息</h2><p>用户名：${user}</p><p>登录时间：${new Date().toLocaleString()}</p><button onclick="logoutUser(event)"><i class="fa-solid fa-sign-out-alt"></i> 注销</button></section>`;
-        } else {
-          userInfo.innerHTML = '<i class="fa-solid fa-user"></i> 未登录';
-          loginNav.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> 登录/注册';
-          pages.login = getLoginPage();
-        }
-      }
+            function updateUserInfo() {
+                const user = localStorage.getItem('currentUser');
+                const userInfo = document.getElementById('user-info');
+                const loginNav = document.getElementById('login-register-nav');
+                if (user) {
+                    userInfo.innerHTML = `<i class="fa-solid fa-user-check"></i> 您好，${user} | <a href="#" onclick="logoutUser(event)">注销</a>`;
+                    loginNav.innerHTML = '<i class="fa-solid fa-id-card"></i> 我的信息';
+                    pages.login = `<section><h2><i class="fa-solid fa-id-card"></i> 当前用户信息</h2><p>用户名：${user}</p><p>登录时间：${new Date().toLocaleString()}</p><button onclick="logoutUser(event)"><i class="fa-solid fa-sign-out-alt"></i> 注销</button></section>`;
+                } else {
+                    userInfo.innerHTML = '<i class="fa-solid fa-user"></i> 未登录';
+                    loginNav.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> 登录/注册';
+                    pages.login = getLoginPage();
+                }
+            }
 
-      function animateContent(html) {
-        const main = document.getElementById('content');
-        main.classList.add('fade-out');
-        setTimeout(() => {
-          main.innerHTML = html;
-          main.classList.remove('fade-out');
-          main.classList.add('fade-in');
-          if (!localStorage.getItem('currentUser')) {
-            setTimeout(() => {
-              setupPasswordHint('register-password', '#password-hint');
-            }, 100);
-          }
-        }, 200);
-      }
+            function animateContent(html) {
+                const main = document.getElementById('content');
+                main.classList.add('fade-out');
+                setTimeout(() => {
+                    main.innerHTML = html;
+                    main.classList.remove('fade-out');
+                    main.classList.add('fade-in');
+                    if (!localStorage.getItem('currentUser')) {
+                        setTimeout(() => setupPasswordHint('register-password', '#password-hint'), 100);
+                    }
+                }, 200);
+            }
 
-      window.switchPage = function(e) {
-        e.preventDefault();
-        const link = e.currentTarget;
-        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
-        link.classList.add('active');
-        updateUserInfo();
-        const page = link.dataset.page;
-        animateContent(pages[page] || '');
-        if (page === 'login' && !localStorage.getItem('currentUser')) {
-          setTimeout(() => {
-            initSliderCaptcha();
-          }, 250);
-        }
-      };
+            window.switchPage = function(e) {
+                e.preventDefault();
+                const link = e.currentTarget;
+                document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+                updateUserInfo();
+                const page = link.dataset.page;
+                animateContent(pages[page] || '');
+                if (page === 'login' && !localStorage.getItem('currentUser')) {
+                    setTimeout(initSliderCaptcha, 250);
+                }
+            };
 
-      window.switchToLogin = function() {
-        const loginNav = document.querySelector('nav a[data-page="login"]');
-        if (loginNav) loginNav.click();
-      };
-      window.switchToRegister = function() {
-        const loginNav = document.querySelector('nav a[data-page="login"]');
-        if (loginNav) loginNav.click();
-      };
+            window.switchToLogin = () => document.querySelector('nav a[data-page="login"]')?.click();
+            window.switchToRegister = () => document.querySelector('nav a[data-page="login"]')?.click();
 
-      window.logoutUser = function(e) {
-        if (e) e.preventDefault();
-        localStorage.removeItem('currentUser');
-        updateUserInfo();
-        pages.login = getLoginPage();
-        showModal('已注销', '您已成功退出登录');
-        document.querySelector('nav a[data-page="home"]').click();
-      };
+            window.logoutUser = function(e) {
+                if (e) e.preventDefault();
+                localStorage.removeItem('currentUser');
+                updateUserInfo();
+                pages.login = getLoginPage();
+                showModal('已注销', '您已成功退出登录');
+                document.querySelector('nav a[data-page="home"]').click();
+            };
 
-      window.showModal = function(title, msg) {
-        document.getElementById('modal-title').textContent = title;
-        document.getElementById('modal-message').textContent = msg;
-        document.getElementById('modal-overlay').style.display = 'flex';
-      };
+            window.showModal = (title, msg) => {
+                document.getElementById('modal-title').textContent = title;
+                document.getElementById('modal-message').textContent = msg;
+                document.getElementById('modal-overlay').style.display = 'flex';
+            };
 
-      window.closeModal = function() {
-        document.getElementById('modal-overlay').style.display = 'none';
-      };
+            window.closeModal = () => document.getElementById('modal-overlay').style.display = 'none';
+            document.getElementById('modal-overlay').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
 
-      document.getElementById('modal-overlay').addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-      });
+            window.handleLogin = function(e) {
+                e.preventDefault();
+                const user = document.getElementById('login-username').value;
+                const pass = document.getElementById('login-password').value;
+                const users = JSON.parse(localStorage.getItem('users') || '{}');
+                if (!users.hasOwnProperty(user)) showModal('登录失败', '没有此账户！');
+                else if (users[user] !== pass) showModal('登录失败', '密码错误！');
+                else {
+                    localStorage.setItem('currentUser', user);
+                    updateUserInfo();
+                    showModal('登录成功', `欢迎回来，${user}！`);
+                    document.querySelector('nav a[data-page="home"]').click();
+                }
+            };
 
-      window.handleLogin = function(e) {
-        e.preventDefault();
-        const user = document.getElementById('login-username').value;
-        const pass = document.getElementById('login-password').value;
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        if (!users.hasOwnProperty(user)) showModal('登录失败', '没有此账户！');
-        else if (users[user] !== pass) showModal('登录失败', '密码错误！');
-        else {
-          localStorage.setItem('currentUser', user);
-          updateUserInfo();
-          showModal('登录成功', `欢迎回来，${user}！`);
-          document.querySelector('nav a[data-page="home"]').click();
-        }
-      };
+            window.handleRegister = function(e) {
+                e.preventDefault();
+                const user = document.getElementById('register-username').value;
+                const pass = document.getElementById('register-password').value;
+                const conf = document.getElementById('register-confirm').value;
+                const passed = document.getElementById('captcha-verified').value === 'true';
+                const users = JSON.parse(localStorage.getItem('users') || '{}');
+                const resetSlider = window.resetSliderCaptcha || function(){};
+                if (!passed) { showModal('注册失败', '请完成滑块验证~'); resetSlider(); return; }
+                if (pass !== conf) { showModal('注册失败', '两次密码不一致~'); resetSlider(); return; }
+                if (pass.length < 8 || pass.length > 16) { showModal('注册失败', '密码长度需8-16位~'); resetSlider(); return; }
+                if (users[user]) { showModal('注册失败', '用户名已存在~'); resetSlider(); return; }
+                users[user] = pass;
+                localStorage.setItem('users', JSON.stringify(users));
+                showModal('注册成功', '注册成功~');
+                document.querySelector('nav a[data-page="login"]').click();
+                setTimeout(() => {
+                    const loginUserInput = document.getElementById('login-username');
+                    if (loginUserInput) loginUserInput.value = user;
+                }, 300);
+            };
 
-      window.handleRegister = function(e) {
-        e.preventDefault();
-        const user = document.getElementById('register-username').value;
-        const pass = document.getElementById('register-password').value;
-        const conf = document.getElementById('register-confirm').value;
-        const passed = document.getElementById('captcha-verified').value === 'true';
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
+            window.togglePassword = function(id, element) {
+                const input = document.getElementById(id);
+                const icon = element.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            };
 
-        const resetSlider = window.resetSliderCaptcha || function(){};
+            function initSliderCaptcha() {
+                const thumb = document.getElementById('slider-thumb');
+                const track = document.getElementById('slider');
+                if (!thumb || !track) return;
+                const resetThisSlider = () => {
+                    thumb.style.left = '0px';
+                    const fill = track.querySelector('.slider-fill');
+                    if (fill) fill.style.width = '0px';
+                    thumb.classList.remove('slider-success');
+                    thumb.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
+                    thumb.style.background = '';
+                    document.getElementById('captcha-verified').value = 'false';
+                    bindEvents();
+                };
+                function bindEvents() {
+                    thumb.onmousedown = mouseDownHandler;
+                    thumb.ontouchstart = touchStartHandler;
+                }
+                window.resetSliderCaptcha = resetThisSlider;
+                let dragging = false, startX = 0, thumbLeft = 0;
+                function startDrag(cX) {
+                    if (thumb.classList.contains('slider-success')) return;
+                    dragging = true; startX = cX;
+                    thumbLeft = parseFloat(thumb.style.left) || 0;
+                    document.body.style.userSelect = 'none';
+                }
+                function onDrag(cX) {
+                    if (!dragging) return;
+                    let newLeft = thumbLeft + cX - startX;
+                    newLeft = Math.max(0, Math.min(newLeft, track.offsetWidth - thumb.offsetWidth));
+                    thumb.style.left = newLeft + 'px';
+                    const fill = track.querySelector('.slider-fill');
+                    if (fill) fill.style.width = newLeft + 'px';
+                }
+                function stopDrag() {
+                    if (!dragging) return;
+                    dragging = false;
+                    document.body.style.userSelect = '';
+                    if (parseFloat(thumb.style.left) >= track.offsetWidth - thumb.offsetWidth - 2) {
+                        thumb.classList.add('slider-success');
+                        thumb.innerHTML = '<i class="fa-solid fa-check"></i>';
+                        thumb.style.background = '#10b981';
+                        document.getElementById('captcha-verified').value = 'true';
+                        thumb.onmousedown = thumb.ontouchstart = null;
+                    } else {
+                        thumb.style.left = '0px';
+                        const fill = track.querySelector('.slider-fill');
+                        if (fill) fill.style.width = '0px';
+                    }
+                    document.onmousemove = document.ontouchmove = null;
+                    document.onmouseup = document.ontouchend = null;
+                }
+                function mouseDownHandler(e) { e.preventDefault(); startDrag(e.clientX); document.onmousemove = e => onDrag(e.clientX); document.onmouseup = stopDrag; }
+                function touchStartHandler(e) { e.preventDefault(); startDrag(e.touches[0].clientX); document.ontouchmove = e => onDrag(e.touches[0].clientX); document.ontouchend = stopDrag; }
+                resetThisSlider();
+            }
 
-        if (!passed) {
-          showModal('注册失败', '请完成滑块验证~');
-          resetSlider();
-          return;
-        }
-        if (pass !== conf) {
-          showModal('注册失败', '两次密码不一致~');
-          resetSlider();
-          return;
-        }
-        if (pass.length < 8 || pass.length > 16) {
-          showModal('注册失败', '密码长度需8-16位~');
-          resetSlider();
-          return;
-        }
-        if (users[user]) {
-          showModal('注册失败', '用户名已存在~');
-          resetSlider();
-          return;
-        }
-        users[user] = pass;
-        localStorage.setItem('users', JSON.stringify(users));
-        showModal('注册成功', '注册成功~');
-        document.querySelector('nav a[data-page="login"]').click();
-        setTimeout(() => {
-          const loginUserInput = document.getElementById('login-username');
-          if (loginUserInput) loginUserInput.value = user;
-        }, 300);
-      };
-
-      window.togglePassword = function(id, element) {
-        const input = document.getElementById(id);
-        const icon = element.querySelector('i');
-        if (input.type === 'password') {
-          input.type = 'text';
-          icon.classList.remove('fa-eye');
-          icon.classList.add('fa-eye-slash');
-        } else {
-          input.type = 'password';
-          icon.classList.remove('fa-eye-slash');
-          icon.classList.add('fa-eye');
-        }
-      };
-
-      function initSliderCaptcha() {
-        const thumb = document.getElementById('slider-thumb');
-        const track = document.getElementById('slider');
-        if (!thumb || !track) return;
-
-        const resetThisSlider = function() {
-          thumb.style.left = '0px';
-          const fill = track.querySelector('.slider-fill');
-          if (fill) fill.style.width = '0px';
-          thumb.classList.remove('slider-success');
-          thumb.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
-          thumb.style.background = '';
-          document.getElementById('captcha-verified').value = 'false';
-          bindEvents();
-        };
-
-        function bindEvents() {
-          thumb.onmousedown = mouseDownHandler;
-          thumb.ontouchstart = touchStartHandler;
-        }
-
-        window.resetSliderCaptcha = resetThisSlider;
-
-        let dragging = false;
-        let startX = 0;
-        let thumbLeft = 0;
-
-        function startDrag(clientX) {
-          if (thumb.classList.contains('slider-success')) return;
-          dragging = true;
-          startX = clientX;
-          const leftStr = thumb.style.left;
-          thumbLeft = leftStr ? parseFloat(leftStr) : 0;
-          document.body.style.userSelect = 'none';
-        }
-
-        function onDrag(clientX) {
-          if (!dragging) return;
-          const delta = clientX - startX;
-          let newLeft = thumbLeft + delta;
-          const maxLeft = track.offsetWidth - thumb.offsetWidth;
-          newLeft = Math.max(0, Math.min(newLeft, maxLeft));
-          thumb.style.left = newLeft + 'px';
-          const fill = track.querySelector('.slider-fill');
-          if (fill) fill.style.width = newLeft + 'px';
-        }
-
-        function stopDrag() {
-          if (!dragging) return;
-          dragging = false;
-          document.body.style.userSelect = '';
-          const maxLeft = track.offsetWidth - thumb.offsetWidth;
-          const currentLeft = parseFloat(thumb.style.left) || 0;
-          if (currentLeft >= maxLeft - 2) {
-            thumb.classList.add('slider-success');
-            thumb.innerHTML = '<i class="fa-solid fa-check"></i>';
-            thumb.style.background = '#10b981';
-            document.getElementById('captcha-verified').value = 'true';
-            thumb.onmousedown = null;
-            thumb.ontouchstart = null;
-          } else {
-            thumb.style.left = '0px';
-            const fill = track.querySelector('.slider-fill');
-            if (fill) fill.style.width = '0px';
-          }
-          document.onmousemove = null;
-          document.ontouchmove = null;
-          document.onmouseup = null;
-          document.ontouchend = null;
-        }
-
-        function mouseDownHandler(e) {
-          e.preventDefault();
-          startDrag(e.clientX);
-          document.onmousemove = function(ev) {
-            ev.preventDefault();
-            onDrag(ev.clientX);
-          };
-          document.onmouseup = function() {
-            stopDrag();
-          };
-        }
-
-        function touchStartHandler(e) {
-          e.preventDefault();
-          const touch = e.touches[0];
-          startDrag(touch.clientX);
-          document.ontouchmove = function(ev) {
-            ev.preventDefault();
-            const touch = ev.touches[0];
-            onDrag(touch.clientX);
-          };
-          document.ontouchend = function() {
-            stopDrag();
-          };
-        }
-
-        resetThisSlider();
-      }
-
-      window.addEventListener("DOMContentLoaded", function() {
-        const navLinks = document.querySelectorAll('nav a');
-        navLinks.forEach(link => {
-          link.addEventListener('click', switchPage);
-        });
-        const homeLink = document.querySelector('nav a[data-page="home"]');
-        if (homeLink) {
-          homeLink.classList.add('active');
-          updateUserInfo();
-          animateContent(pages['home']);
-        }
-      });
-    })();
-  </script>
+            window.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll('nav a').forEach(link => link.addEventListener('click', switchPage));
+                const homeLink = document.querySelector('nav a[data-page="home"]');
+                if (homeLink) {
+                    homeLink.classList.add('active');
+                    updateUserInfo();
+                    animateContent(pages['home']);
+                }
+            });
+        })();
+    </script>
 </body>
 </html>
