@@ -15,7 +15,6 @@
         }
 
         :root {
-            /* 默认颜色变量 */
             --card-bg-light: rgba(255, 255, 255, 0.65);
             --card-bg-dark: rgba(0, 0, 0, 0.65);
             --card-border-light: rgba(255, 255, 255, 0.8);
@@ -651,6 +650,7 @@
             gap: 1rem;
             justify-content: center;
             margin: 1.5rem 0;
+            flex-wrap: wrap;
         }
         .color-btn {
             width: 50px;
@@ -675,6 +675,20 @@
         }
         .color-btn.orange {
             background: linear-gradient(135deg, #fde2c3 50%, #7b4a2c 50%);
+        }
+        .color-btn.glass {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 50%, rgba(0,0,0,0.05) 50%);
+            position: relative;
+        }
+        .color-btn.glass::after {
+            content: "玻璃";
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            color: inherit;
+            white-space: nowrap;
         }
 
         /* ===== 底部悬浮区域 ===== */
@@ -790,6 +804,8 @@
                 <div class="color-btn blue" data-color="blue"></div>
                 <div class="color-btn pink" data-color="pink"></div>
                 <div class="color-btn orange" data-color="orange"></div>
+                <!-- 新增玻璃选项 -->
+                <div class="color-btn glass" data-color="glass"></div>
             </div>
             <button id="closeSettingsBtn" style="margin-top:1rem;">关闭</button>
         </div>
@@ -805,10 +821,10 @@
 
     <script>
         (function() {
-            // ---------- 移动设备检测（立即执行，尽早跳转） ----------
+            // ---------- 移动设备检测 ----------
             if (/Mobi|Android|iPhone|iPad|iPod|webOS/i.test(navigator.userAgent) || window.innerWidth < 768) {
                 window.location.replace('index-moble.html');
-                return; // 停止后续脚本执行
+                return;
             }
 
             // ---------- 背景音乐 ----------
@@ -840,7 +856,7 @@
                 localStorage.setItem('bgmMuted', isMuted);
             });
 
-            // ---------- 颜色主题管理 ----------
+            // ---------- 颜色主题管理（新增glass方案） ----------
             const colorSchemes = {
                 default: {
                     '--card-bg-light': 'rgba(255, 255, 255, 0.65)',
@@ -873,6 +889,14 @@
                     '--card-border-dark': 'rgba(140, 85, 50, 0.7)',
                     '--text-color-light': '#3e270b',
                     '--text-color-dark': '#fef3e4'
+                },
+                glass: {
+                    '--card-bg-light': 'rgba(255, 255, 255, 0.05)',
+                    '--card-bg-dark': 'rgba(0, 0, 0, 0.05)',
+                    '--card-border-light': 'rgba(255, 255, 255, 0.15)',
+                    '--card-border-dark': 'rgba(0, 0, 0, 0.15)',
+                    '--text-color-light': '#111',
+                    '--text-color-dark': '#f8fafc'
                 }
             };
 
@@ -893,11 +917,9 @@
                 });
             }
 
-            // 读取保存的主题
             const savedTheme = localStorage.getItem('themeColor') || 'default';
             applyColorScheme(savedTheme);
 
-            // 设置面板打开/关闭
             settingsCard.addEventListener('click', (e) => {
                 e.stopPropagation();
                 settingsPanel.style.display = 'flex';
