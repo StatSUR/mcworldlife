@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>World Life 服务器官网</title>
+    <link rel="icon" href="WL LOGO.png" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --card-bg-light: rgba(255, 255, 255, 0.75);
+            --card-bg-dark: rgba(0, 0, 0, 0.75);
+            --card-border-light: rgba(255, 255, 255, 0.9);
+            --card-border-dark: rgba(0, 0, 0, 0.7);
+            --text-color-light: #111;
+            --text-color-dark: #f8fafc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: url('BGPhoto Light.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-color-light);
+            transition: background 0.3s, color 0.3s;
+            padding: 10px 12px 90px 12px;
+            -webkit-user-drag: none;
+            user-drag: none;
+            --card-bg: var(--card-bg-light);
+            --card-border: var(--card-border-light);
+            --text-color: var(--text-color-light);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-image: url('BGPhoto Dark.png');
+                color: var(--text-color-dark);
+                --card-bg: var(--card-bg-dark);
+                --card-border: var(--card-border-dark);
+                --text-color: var(--text-color-dark);
+            }
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            color: var(--text-color);
+            border-radius: 20px;
+            border: 1.5px solid var(--card-border);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-header {
+            position: fixed;
+            top: 10px;
+            left: 12px;
+            right: 12px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .user-row {
+            display: flex;
+            align-items: center;
+            padding: 10px 16px;
+            font-weight: bold;
+            font-size: 1rem;
+            gap: 6px;
+        }
+
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 16px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            gap: 6px;
+            text-align: center;
+        }
+
+        .title-row img {
+            width: 1.4em;
+            height: 1.4em;
+            vertical-align: middle;
+            border-radius: 4px;
+        }
+
+        .nav-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+
+        .nav-row a {
+            color: inherit;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 2px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        .nav-row a.active {
+            color: #facc15;
+        }
+
+        .nav-row a::after {
+            content: "";
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #facc15;
+            transition: width 0.2s;
+        }
+
+        .nav-row a.active::after {
+            width: 100%;
+        }
+
+        main {
+            flex: 1;
+            margin-top: 160px;
+            padding: 8px 0;
+            width: 100%;
+            transition: opacity 0.4s ease;
+        }
+
+        main.fade-out {
+            opacity: 0;
+            transform: translateY(8px);
+        }
+
+        main.fade-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        section {
+            padding: 1.2rem;
+            margin: 0.8rem 0;
+            border-radius: 20px;
+            width: 100%;
+            animation: fadeUp 0.4s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            font-size: 1.3rem;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid #0ea5e9;
+            padding-left: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            h2 {
+                border-left-color: #8b5cf6;
+                color: #facc15;
+            }
+        }
+
+        .team span {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0.6rem 1rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            margin-bottom: 0.5rem;
+        }
+
+        .role-owner {
+            background: rgba(251, 191, 36, 0.8);
+            color: #1e293b;
+            border: 2px solid #fbbf24;
+        }
+        .role-builder {
+            background: rgba(96, 165, 250, 0.8);
+            color: #0F172A;
+            border: 2px solid #3b82f6;
+        }
+        .role-admin {
+            background: rgba(167, 139, 250, 0.8);
+            color: #0F172A;
+            border: 2px solid #8b5cf6;
+        }
+        .role-player {
+            background: rgba(52, 211, 153, 0.8);
+            color: #064e3b;
+            border: 2px solid #10b981;
+        }
+
+        input,
+        button {
+            padding: 0.8rem;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            width: 100%;
+            border: none;
+            transition: 0.2s;
+        }
+
+        input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid #e2e8f0;
+            color: #111;
+        }
+
+        button {
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            color: white;
+            font-weight: 600;
+        }
+
+        .settings-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+        }
+
+        .settings-content {
+            background: var(--card-bg);
+            backdrop-filter: blur(14px);
+            padding: 1.5rem;
+            border-radius: 24px;
+            width: 85%;
+            max-width: 320px;
+            border: 1px solid var(--card-border);
+        }
+
+        .color-options {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 1rem 0;
+        }
+
+        .color-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .color-btn.active {
+            border-color: #facc15;
+        }
+
+        .mobile-footer {
+            position: fixed;
+            bottom: 12px;
+            left: 12px;
+            right: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            gap: 10px;
+        }
+
+        .footer-left,
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 1rem;
+            white-space: nowrap;
+        }
+
+        .music-btn {
+            cursor: pointer;
+        }
+
+        .slider-captcha {
+            user-select: none;
+            width: 100%;
+            margin: 1rem 0 0.5rem;
+            background: #e5e7eb;
+            border-radius: 30px;
+            height: 44px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #d1d5db;
+        }
+
+        .slider-track {
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: #d1d5db;
+        }
+
+        .slider-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background: #10b981;
+            z-index: 1;
+            width: 0;
+            border-radius: 30px 0 0 30px;
+            transition: width 0.1s ease;
+        }
+
+        .slider-thumb {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 44px;
+            height: 44px;
+            background: #3b82f6;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 30px;
+            cursor: grab;
+            z-index: 2;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <div class="mobile-header">
+        <div class="glass-card user-row" id="user-info"><i class="fa-solid fa-user"></i> 未登录</div>
+        <div class="glass-card title-row">
+            <img src="WL LOGO.png" alt="WL图标"> World Life 官方网站
+        </div>
+        <div class="glass-card nav-row">
+            <a data-page="home"><i class="fa-solid fa-house"></i> 首页</a>
+            <a data-page="server"><i class="fa-solid fa-server"></i> 服务器</a>
+            <a data-page="commands"><i class="fa-solid fa-terminal"></i> 指令</a>
+            <a data-page="daily"><i class="fa-solid fa-newspaper"></i> 日报</a>
+            <a id="login-register-nav" data-page="login"><i class="fa-solid fa-right-to-bracket"></i> 登录/注册</a>
+        </div>
+    </div>
+
+    <main id="content"></main>
+
+    <div class="mobile-footer">
+        <div class="glass-card footer-left" id="musicToggle">
+            <i class="fa-solid fa-volume-mute"></i> <span>音量</span>
+        </div>
+        <div class="glass-card footer-right">
+            <span><i class="fa-regular fa-copyright"></i> 2026 WL by RXC</span>
+            <div id="settingsCard" style="cursor:pointer; margin-left:6px;"><i class="fa-solid fa-gear"></i></div>
+        </div>
+    </div>
+
+    <div class="settings-panel" id="settingsPanel">
+        <div class="settings-content">
+            <h3 style="text-align:center; margin-bottom:0.5rem;">主题颜色</h3>
+            <div class="color-options">
+                <div class="color-btn default active" data-color="default" style="background:linear-gradient(135deg, #ffffff 50%, #000000 50%);"></div>
+                <div class="color-btn blue" data-color="blue" style="background:linear-gradient(135deg, #b0d4f1 50%, #1a3b5c 50%);"></div>
+                <div class="color-btn pink" data-color="pink" style="background:linear-gradient(135deg, #f8c8d4 50%, #6b2b3a 50%);"></div>
+                <div class="color-btn orange" data-color="orange" style="background:linear-gradient(135deg, #fde2c3 50%, #7b4a2c 50%);"></div>
+            </div>
+            <button id="closeSettingsBtn" style="margin-top:0.5rem;">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // 背景音乐
+            const audio = new Audio('bgm.mp3');
+            audio.loop = true;
+            audio.preload = 'auto';
+            let isMuted = localStorage.getItem('bgmMuted') === 'true';
+            const musicBtn = document.getElementById('musicToggle');
+            const iconElem = musicBtn.querySelector('i');
+            audio.muted = isMuted;
+            iconElem.className = isMuted ? 'fa-solid fa-volume-mute' : 'fa-solid fa-volume-up';
+
+            musicBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                isMuted = !isMuted;
+                audio.muted = isMuted;
+                iconElem.className = isMuted ? 'fa-solid fa-volume-mute' : 'fa-solid fa-volume-up';
+                if (!isMuted) audio.play().catch(() => {});
+                localStorage.setItem('bgmMuted', isMuted);
+            });
+
+            // 颜色主题
+            const colorSchemes = {
+                default: {
+                    '--card-bg-light': 'rgba(255, 255, 255, 0.75)',
+                    '--card-bg-dark': 'rgba(0, 0, 0, 0.75)',
+                    '--card-border-light': 'rgba(255, 255, 255, 0.9)',
+                    '--card-border-dark': 'rgba(0, 0, 0, 0.7)',
+                    '--text-color-light': '#111',
+                    '--text-color-dark': '#f8fafc'
+                },
+                blue: {
+                    '--card-bg-light': 'rgba(200, 220, 245, 0.75)',
+                    '--card-bg-dark': 'rgba(25, 45, 75, 0.75)',
+                    '--card-border-light': 'rgba(160, 200, 240, 0.95)',
+                    '--card-border-dark': 'rgba(45, 65, 95, 0.8)',
+                    '--text-color-light': '#0a192f',
+                    '--text-color-dark': '#e2e8f0'
+                },
+                pink: {
+                    '--card-bg-light': 'rgba(248, 210, 220, 0.75)',
+                    '--card-bg-dark': 'rgba(90, 35, 45, 0.75)',
+                    '--card-border-light': 'rgba(240, 180, 195, 0.95)',
+                    '--card-border-dark': 'rgba(110, 45, 55, 0.8)',
+                    '--text-color-light': '#3a0a12',
+                    '--text-color-dark': '#fde8ec'
+                },
+                orange: {
+                    '--card-bg-light': 'rgba(255, 230, 200, 0.75)',
+                    '--card-bg-dark': 'rgba(110, 65, 35, 0.75)',
+                    '--card-border-light': 'rgba(245, 195, 145, 0.95)',
+                    '--card-border-dark': 'rgba(130, 80, 45, 0.8)',
+                    '--text-color-light': '#3e270b',
+                    '--text-color-dark': '#fef3e4'
+                }
+            };
+
+            const root = document.documentElement;
+            const settingsPanel = document.getElementById('settingsPanel');
+            const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+            const colorBtns = document.querySelectorAll('.color-btn');
+            const settingsCard = document.getElementById('settingsCard');
+
+            function applyColorScheme(name) {
+                const scheme = colorSchemes[name] || colorSchemes.default;
+                for (const [key, value] of Object.entries(scheme)) {
+                    root.style.setProperty(key, value);
+                }
+                localStorage.setItem('themeColor', name);
+                colorBtns.forEach(b => b.classList.toggle('active', b.dataset.color === name));
+            }
+
+            applyColorScheme(localStorage.getItem('themeColor') || 'default');
+            settingsCard.addEventListener('click', () => settingsPanel.style.display = 'flex');
+            closeSettingsBtn.addEventListener('click', () => settingsPanel.style.display = 'none');
+            settingsPanel.addEventListener('click', e => { if (e.target === settingsPanel) settingsPanel.style.display = 'none'; });
+            colorBtns.forEach(b => b.addEventListener('click', () => applyColorScheme(b.dataset.color)));
+
+            // ---------- 完整内容与功能（与桌面版完全相同） ----------
+            const diaryEntries = [
+                { file: 'date1.html', date: '2025-08-06', desc: '测试日报。' },
+                { file: 'date2.html', date: '2025-08-05', desc: '服务器维护，优化了地图加载速度。' }
+            ];
+
+            function setupPasswordHint(passwordId, hintSelector) {
+                const pwdInput = document.getElementById(passwordId);
+                if (!pwdInput) return;
+                pwdInput.addEventListener('input', function() {
+                    const hint = document.querySelector(hintSelector);
+                    if (!hint) return;
+                    if (this.value.length >= 8) hint.classList.add('valid');
+                    else hint.classList.remove('valid');
+                });
+            }
+
+            function getHomePage() {
+                return `<section class="glass-card"><h2><i class="fa-solid fa-hand-wave"></i> 欢迎来到 World Life 服务器</h2><p>这是一个虚拟的 Minecraft 世界，你可以加入或创建虚拟的国家，扮演多种角色~</p></section>` +
+                    `<section class="glass-card"><h2><i class="fa-solid fa-map"></i> 世界地图玩法</h2><p>在1:1000比例的世界地图中，可加入或创建国家~</p></section>` +
+                    `<section class="glass-card"><h2><i class="fa-solid fa-users"></i> 主要人员</h2>
+         <div class="team" style="display: flex; flex-direction: column; gap: 1rem;">
+           <span class="role-owner" style="display: flex; width: 100%; align-items: center; justify-content: center; gap: 8px;">
+             <img src="ServerPhoto/RXC.jpeg" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+             <i class="fa-solid fa-crown"></i> 服主：星星 RXC
+           </span>
+           <div style="display: flex; gap: 1rem; width: 100%;">
+             <span class="role-builder" style="display: flex; flex: 1; align-items: center; justify-content: center; gap: 8px;">
+               <img src="ServerPhoto/Lobe.jpeg" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+               <i class="fa-solid fa-hammer"></i> 建服者：洛白
+             </span>
+             <span class="role-admin" style="display: flex; flex: 1; align-items: center; justify-content: center; gap: 8px;">
+               <img src="ServerPhoto/CHL.jpeg" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+               <i class="fa-solid fa-shield"></i> 管理员：CHLovo
+             </span>
+           </div>
+           <span class="role-player" style="display: flex; width: 100%; align-items: center; justify-content: center; gap: 8px;">
+             <i class="fa-solid fa-users"></i> 玩家团队
+           </span>
+         </div></section>`;
+            }
+
+            function getDailyPage() {
+                let list = '<ul>';
+                diaryEntries.forEach(entry => {
+                    list += `<li><a href="${entry.file}" target="_blank">${entry.date}</a> — ${entry.desc}</li>`;
+                });
+                list += '</ul>';
+                return `<section class="glass-card"><h2><i class="fa-regular fa-calendar"></i> 服务器日报列表</h2>${list}</section>`;
+            }
+
+            function getLoginPage() {
+                return `<section class="glass-card"><h2><i class="fa-solid fa-right-to-bracket"></i> 请登录</h2>
+          <form onsubmit="handleLogin(event)">
+          <div class="input-group"><input id="login-username" type="text" placeholder="用户名" required minlength="3"/></div>
+          <div class="input-group"><input id="login-password" type="password" placeholder="密码" required/>
+          <span class="toggle-pw" onclick="togglePassword('login-password', this)"><i class="fa-regular fa-eye"></i></span></div>
+          <button type="submit"><i class="fa-solid fa-arrow-right-to-bracket"></i> 登录</button></form>
+          <div class="quick-login"><a onclick="switchToRegister()">没有账号？立即注册</a></div>
+          </section>
+          <section class="glass-card"><h2><i class="fa-solid fa-user-plus"></i> 注册新账户</h2>
+          <form onsubmit="handleRegister(event)">
+          <div class="input-group"><input id="register-username" type="text" placeholder="新用户名（至少3字符）" required minlength="3"/></div>
+          <div class="input-group"><input id="register-password" type="password" placeholder="新密码（8-16位）" pattern=".{8,16}" required/>
+          <span class="toggle-pw" onclick="togglePassword('register-password', this)"><i class="fa-regular fa-eye"></i></span></div>
+          <span class="hint" id="password-hint"><i class="fa-regular fa-circle-check"></i> 密码长度需8-16位~</span>
+          <div class="input-group"><input id="register-confirm" type="password" placeholder="确认密码" required/>
+          <span class="toggle-pw" onclick="togglePassword('register-confirm', this)"><i class="fa-regular fa-eye"></i></span></div>
+          <div class="slider-captcha" id="slider">
+            <div class="slider-track"></div>
+            <div class="slider-fill"></div>
+            <div class="slider-thumb" id="slider-thumb"><i class="fa-solid fa-angles-right"></i></div>
+            <input type="hidden" id="captcha-verified" value="false"/>
+          </div>
+          <span class="hint"><i class="fa-regular fa-hand-pointer"></i> 拖动滑块完成验证~</span>
+          <button type="submit"><i class="fa-solid fa-user-check"></i> 注册</button></form>
+          <div class="quick-login"><a onclick="switchToLogin()">已有账号？立即登录</a></div>
+          </section>`;
+            }
+
+            const pages = {
+                home: getHomePage(),
+                server: `<section class="glass-card"><h2><i class="fa-solid fa-circle-info"></i> 如何加入服务器</h2><p>加入我们的QQ群：749664574~</p></section>
+         <section class="glass-card"><h2><i class="fa-solid fa-map"></i> 服务器地图</h2>
+         <iframe src="https://earth.motfe.net/overviews/earth_1-1000_overview/unmined.index.html" style="width:100%; height:300px; border:none; border-radius:12px; margin-top:0.5rem; box-shadow:0 4px 12px rgba(0,0,0,0.1);"></iframe>
+         <div style="text-align:center; margin-top:1rem;"><a href="https://earth.motfe.net/overviews/earth_1-1000_overview/unmined.index.html" target="_blank" style="color:#3b82f6; text-decoration:none; font-weight:500;"><i class="fa-solid fa-external-link-alt"></i> 查看大图</a></div>
+         </section>`,
+                commands: `<section class="glass-card"><h2><i class="fa-solid fa-terminal"></i> 常用指令列表</h2><ul><li>/reg 密码 密码：注册</li><li>/login 密码：登录</li><li>/tpa 玩家名：传送请求</li><li>/tpahere 玩家名：请求对方传送</li><li>/back：回到死亡/传送点</li><li>/co i：启用/关闭检查器</li></ul></section>`,
+                daily: getDailyPage(),
+                login: ''
+            };
+
+            function updateUserInfo() {
+                const user = localStorage.getItem('currentUser');
+                const userInfo = document.getElementById('user-info');
+                const loginNav = document.getElementById('login-register-nav');
+                if (user) {
+                    userInfo.innerHTML = `<i class="fa-solid fa-user-check"></i> 您好，${user} | <a href="#" onclick="logoutUser(event)">注销</a>`;
+                    loginNav.innerHTML = '<i class="fa-solid fa-id-card"></i> 我的信息';
+                    pages.login = `<section class="glass-card"><h2><i class="fa-solid fa-id-card"></i> 当前用户信息</h2><p>用户名：${user}</p><p>登录时间：${new Date().toLocaleString()}</p><button onclick="logoutUser(event)"><i class="fa-solid fa-sign-out-alt"></i> 注销</button></section>`;
+                } else {
+                    userInfo.innerHTML = '<i class="fa-solid fa-user"></i> 未登录';
+                    loginNav.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> 登录/注册';
+                    pages.login = getLoginPage();
+                }
+            }
+
+            function animateContent(html) {
+                const main = document.getElementById('content');
+                main.classList.add('fade-out');
+                setTimeout(() => {
+                    main.innerHTML = html;
+                    main.classList.remove('fade-out');
+                    main.classList.add('fade-in');
+                    if (!localStorage.getItem('currentUser')) {
+                        setTimeout(() => setupPasswordHint('register-password', '#password-hint'), 100);
+                        setTimeout(initSliderCaptcha, 200);
+                    }
+                }, 150);
+            }
+
+            window.switchPage = function(e) {
+                e.preventDefault();
+                const link = e.currentTarget;
+                document.querySelectorAll('.nav-row a').forEach(a => a.classList.remove('active'));
+                link.classList.add('active');
+                updateUserInfo();
+                const page = link.dataset.page;
+                const content = pages[page] || '';
+                animateContent(content);
+                if (page === 'login' && !localStorage.getItem('currentUser')) {
+                    setTimeout(initSliderCaptcha, 300);
+                }
+            };
+
+            window.switchToLogin = () => document.querySelector('a[data-page="login"]')?.click();
+            window.switchToRegister = () => document.querySelector('a[data-page="login"]')?.click();
+
+            window.logoutUser = function(e) {
+                if (e) e.preventDefault();
+                localStorage.removeItem('currentUser');
+                updateUserInfo();
+                pages.login = getLoginPage();
+                alert('已注销');
+                document.querySelector('a[data-page="home"]')?.click();
+            };
+
+            window.showModal = (title, msg) => alert(title + ': ' + msg);
+
+            window.handleLogin = function(e) {
+                e.preventDefault();
+                const user = document.getElementById('login-username').value;
+                const pass = document.getElementById('login-password').value;
+                const users = JSON.parse(localStorage.getItem('users') || '{}');
+                if (!users[user]) showModal('登录失败', '没有此账户！');
+                else if (users[user] !== pass) showModal('登录失败', '密码错误！');
+                else {
+                    localStorage.setItem('currentUser', user);
+                    updateUserInfo();
+                    showModal('登录成功', `欢迎回来，${user}！`);
+                    document.querySelector('a[data-page="home"]')?.click();
+                }
+            };
+
+            window.handleRegister = function(e) {
+                e.preventDefault();
+                const user = document.getElementById('register-username').value;
+                const pass = document.getElementById('register-password').value;
+                const conf = document.getElementById('register-confirm').value;
+                const passed = document.getElementById('captcha-verified').value === 'true';
+                const users = JSON.parse(localStorage.getItem('users') || '{}');
+                if (!passed) { alert('请完成滑块验证'); return; }
+                if (pass !== conf) { alert('两次密码不一致'); return; }
+                if (pass.length < 8 || pass.length > 16) { alert('密码长度需8-16位'); return; }
+                if (users[user]) { alert('用户名已存在'); return; }
+                users[user] = pass;
+                localStorage.setItem('users', JSON.stringify(users));
+                alert('注册成功');
+                document.querySelector('a[data-page="login"]')?.click();
+                setTimeout(() => {
+                    const loginUserInput = document.getElementById('login-username');
+                    if (loginUserInput) loginUserInput.value = user;
+                }, 300);
+            };
+
+            window.togglePassword = function(id, element) {
+                const input = document.getElementById(id);
+                const icon = element.querySelector('i');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.replace('fa-eye', 'fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.replace('fa-eye-slash', 'fa-eye');
+                }
+            };
+
+            function initSliderCaptcha() {
+                const thumb = document.getElementById('slider-thumb');
+                const track = document.getElementById('slider');
+                if (!thumb || !track) return;
+                const resetThisSlider = () => {
+                    thumb.style.left = '0px';
+                    const fill = track.querySelector('.slider-fill');
+                    if (fill) fill.style.width = '0px';
+                    thumb.classList.remove('slider-success');
+                    thumb.innerHTML = '<i class="fa-solid fa-angles-right"></i>';
+                    thumb.style.background = '';
+                    document.getElementById('captcha-verified').value = 'false';
+                    bindEvents();
+                };
+                function bindEvents() {
+                    thumb.onmousedown = mouseDownHandler;
+                    thumb.ontouchstart = touchStartHandler;
+                }
+                window.resetSliderCaptcha = resetThisSlider;
+                let dragging = false, startX = 0, thumbLeft = 0;
+                function startDrag(cX) {
+                    if (thumb.classList.contains('slider-success')) return;
+                    dragging = true; startX = cX;
+                    thumbLeft = parseFloat(thumb.style.left) || 0;
+                    document.body.style.userSelect = 'none';
+                }
+                function onDrag(cX) {
+                    if (!dragging) return;
+                    let newLeft = thumbLeft + cX - startX;
+                    newLeft = Math.max(0, Math.min(newLeft, track.offsetWidth - thumb.offsetWidth));
+                    thumb.style.left = newLeft + 'px';
+                    const fill = track.querySelector('.slider-fill');
+                    if (fill) fill.style.width = newLeft + 'px';
+                }
+                function stopDrag() {
+                    if (!dragging) return;
+                    dragging = false;
+                    document.body.style.userSelect = '';
+                    if (parseFloat(thumb.style.left) >= track.offsetWidth - thumb.offsetWidth - 2) {
+                        thumb.classList.add('slider-success');
+                        thumb.innerHTML = '<i class="fa-solid fa-check"></i>';
+                        thumb.style.background = '#10b981';
+                        document.getElementById('captcha-verified').value = 'true';
+                        thumb.onmousedown = thumb.ontouchstart = null;
+                    } else {
+                        thumb.style.left = '0px';
+                        const fill = track.querySelector('.slider-fill');
+                        if (fill) fill.style.width = '0px';
+                    }
+                    document.onmousemove = document.ontouchmove = null;
+                    document.onmouseup = document.ontouchend = null;
+                }
+                function mouseDownHandler(e) { e.preventDefault(); startDrag(e.clientX); document.onmousemove = e => onDrag(e.clientX); document.onmouseup = stopDrag; }
+                function touchStartHandler(e) { e.preventDefault(); startDrag(e.touches[0].clientX); document.ontouchmove = e => onDrag(e.touches[0].clientX); document.ontouchend = stopDrag; }
+                resetThisSlider();
+            }
+
+            window.addEventListener("DOMContentLoaded", () => {
+                document.querySelectorAll('.nav-row a').forEach(link => link.addEventListener('click', switchPage));
+                const homeLink = document.querySelector('a[data-page="home"]');
+                if (homeLink) {
+                    homeLink.classList.add('active');
+                    updateUserInfo();
+                    animateContent(pages.home);
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
