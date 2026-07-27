@@ -423,6 +423,8 @@
         </div>
         <div class="glass-card footer-right">
             <span><i class="fa-regular fa-copyright"></i> 2026 WL by RXC|晋</span>
+            <!-- 下载图标（仅图标，无文字） -->
+            <span id="downloadLinkMobile" style="cursor:pointer; margin-left:6px;" title="下载"><i class="fa-solid fa-download"></i></span>
             <div id="settingsCard" style="cursor:pointer; margin-left:6px;"><i class="fa-solid fa-gear"></i></div>
         </div>
     </div>
@@ -527,6 +529,13 @@
             closeSettingsBtn.addEventListener('click', () => settingsPanel.style.display = 'none');
             settingsPanel.addEventListener('click', e => { if (e.target === settingsPanel) settingsPanel.style.display = 'none'; });
             colorBtns.forEach(b => b.addEventListener('click', () => applyColorScheme(b.dataset.color)));
+
+            // ---------- 下载按钮 ----------
+            const downloadBtn = document.getElementById('downloadLinkMobile');
+            downloadBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.open('xiazai.html', '_blank');
+            });
 
             // ---------- 完整内容与功能（与桌面版完全相同） ----------
             const diaryEntries = [
