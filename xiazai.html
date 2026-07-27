@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>World Life 软件下载</title>
+    <link rel="icon" href="WL LOGO.png" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --card-bg-light: rgba(255, 255, 255, 0.65);
+            --card-bg-dark: rgba(0, 0, 0, 0.65);
+            --card-border-light: rgba(255, 255, 255, 0.8);
+            --card-border-dark: rgba(0, 0, 0, 0.6);
+            --text-color-light: #111;
+            --text-color-dark: #f8fafc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: url('BGPhoto Light.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-color-light);
+            transition: background 0.3s, color 0.3s;
+            padding-top: 90px;
+            padding-bottom: 90px;
+            padding-left: 15px;
+            padding-right: 15px;
+            -webkit-user-drag: none;
+            user-drag: none;
+            --card-bg: var(--card-bg-light);
+            --card-border: var(--card-border-light);
+            --text-color: var(--text-color-light);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-image: url('BGPhoto Dark.png');
+                color: var(--text-color-dark);
+                --card-bg: var(--card-bg-dark);
+                --card-border: var(--card-border-dark);
+                --text-color: var(--text-color-dark);
+            }
+        }
+
+        /* ===== 顶部悬浮卡片 ===== */
+        header {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 70px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: var(--text-color);
+            border-radius: 24px;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            padding: 0 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            header {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            }
+        }
+
+        .title {
+            font-size: clamp(1.2rem, 2vw, 1.6rem);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .title img {
+            width: 1.6em;
+            height: 1.6em;
+            vertical-align: middle;
+            border-radius: 4px;
+        }
+
+        /* ===== 主内容区 ===== */
+        main {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        article {
+            flex: 1;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: var(--text-color);
+            border-radius: 24px;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: clamp(1.5rem, 4vw, 2.5rem);
+            margin: 1rem 0;
+            width: 100%;
+            transition: all 0.3s ease;
+            animation: fadeUp 0.5s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        article:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            article {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            }
+            article:hover {
+                box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        .download-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .download-item {
+            background: var(--card-bg);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1.5px solid var(--card-border);
+            border-radius: 20px;
+            padding: 1.8rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .download-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
+
+        .download-item h2 {
+            font-size: 1.5rem;
+            color: #1e40af;
+            border-left: 4px solid #0ea5e9;
+            padding-left: 0.8rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .download-item h2 {
+                color: #facc15;
+                border-left-color: #8b5cf6;
+            }
+        }
+
+        .download-item .desc {
+            font-size: 1rem;
+            color: #334155;
+            line-height: 1.6;
+            margin: 0.3rem 0;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .download-item .desc {
+                color: #cbd5e1;
+            }
+        }
+
+        .download-item .meta {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            font-size: 0.9rem;
+            color: #475569;
+            flex-wrap: wrap;
+        }
+
+        .download-item .meta i {
+            margin-right: 4px;
+            color: #0ea5e9;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .download-item .meta {
+                color: #94a3b8;
+            }
+            .download-item .meta i {
+                color: #8b5cf6;
+            }
+        }
+
+        /* 下载按钮和提示同行容器 */
+        .download-action {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .download-item .download-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.2s, transform 0.2s;
+            font-size: 1.05rem;
+            border: 1px solid #2563eb;
+            padding: 0.5rem 1.2rem;
+            border-radius: 30px;
+            width: fit-content;
+            cursor: pointer;
+        }
+
+        .download-item .download-link:hover {
+            color: #1d4ed8;
+            background: rgba(37, 99, 235, 0.1);
+            transform: scale(1.02);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .download-item .download-link {
+                color: #8b5cf6;
+                border-color: #8b5cf6;
+            }
+            .download-item .download-link:hover {
+                color: #a78bfa;
+                background: rgba(139, 92, 246, 0.15);
+            }
+        }
+
+        .download-hint {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .download-hint {
+                color: #94a3b8;
+            }
+        }
+
+        /* 简易 Toast 提示 */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #10b981;
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 30px;
+            font-weight: 500;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            z-index: 200;
+            opacity: 0;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+        }
+
+        /* ===== 底部悬浮卡片 ===== */
+        footer {
+            position: fixed;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 70px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: var(--text-color);
+            border-radius: 24px;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            gap: 6px;
+            white-space: nowrap;
+            padding: 0 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            footer {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <header>
+        <div class="title">
+            <img src="WL LOGO.png" alt="WL图标">
+            World Life 软件下载
+        </div>
+    </header>
+
+    <main>
+        <article>
+            <div class="download-list">
+                <!-- 第一个下载项：服务器交易等价器 -->
+                <div class="download-item">
+                    <h2><i class="fa-solid fa-file-arrow-down"></i> 服务器交易等价器（V1.0）</h2>
+                    <p class="desc">利用该工具可以查看各物品与服务器内货币强化煤或各其他物品的价值比例。</p>
+                    <div class="meta">
+                        <span><i class="fa-regular fa-calendar"></i> 2026.7.27</span>
+                        <span><i class="fa-solid fa-tag"></i> 工具</span>
+                        <!-- 新增作者信息，紧跟在标签后面 -->
+                        <span><i class="fa-solid fa-user-pen"></i> 作者 RXC</span>
+                    </div>
+                    <!-- 下载按钮与提示同行 -->
+                    <div class="download-action">
+                        <a href="#" class="download-link" id="downloadBtn">
+                            <i class="fa-solid fa-download"></i> 点击下载
+                        </a>
+                        <div class="download-hint">
+                            <i class="fa-solid fa-circle-info"></i> 点击下载将自动复制密码
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </main>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-check"></i> 密码已复制到剪贴板
+    </div>
+
+    <footer>
+        <i class="fa-regular fa-copyright"></i> 2026 World Life 服务器 by RXC | 晋
+    </footer>
+
+    <script>
+        (function() {
+            // ---------- 颜色主题（与主站一致） ----------
+            const colorSchemes = {
+                default: {
+                    '--card-bg-light': 'rgba(255, 255, 255, 0.65)',
+                    '--card-bg-dark': 'rgba(0, 0, 0, 0.65)',
+                    '--card-border-light': 'rgba(255, 255, 255, 0.8)',
+                    '--card-border-dark': 'rgba(0, 0, 0, 0.6)',
+                    '--text-color-light': '#111',
+                    '--text-color-dark': '#f8fafc'
+                },
+                blue: {
+                    '--card-bg-light': 'rgba(190, 215, 240, 0.65)',
+                    '--card-bg-dark': 'rgba(30, 50, 80, 0.65)',
+                    '--card-border-light': 'rgba(150, 190, 230, 0.9)',
+                    '--card-border-dark': 'rgba(40, 60, 90, 0.7)',
+                    '--text-color-light': '#0a192f',
+                    '--text-color-dark': '#e2e8f0'
+                },
+                pink: {
+                    '--card-bg-light': 'rgba(245, 200, 210, 0.65)',
+                    '--card-bg-dark': 'rgba(100, 40, 50, 0.65)',
+                    '--card-border-light': 'rgba(235, 170, 185, 0.9)',
+                    '--card-border-dark': 'rgba(120, 50, 60, 0.7)',
+                    '--text-color-light': '#3a0a12',
+                    '--text-color-dark': '#fde8ec'
+                },
+                orange: {
+                    '--card-bg-light': 'rgba(250, 225, 195, 0.65)',
+                    '--card-bg-dark': 'rgba(120, 70, 40, 0.65)',
+                    '--card-border-light': 'rgba(240, 190, 140, 0.9)',
+                    '--card-border-dark': 'rgba(140, 85, 50, 0.7)',
+                    '--text-color-light': '#3e270b',
+                    '--text-color-dark': '#fef3e4'
+                },
+                glass: {
+                    '--card-bg-light': 'rgba(255, 255, 255, 0.05)',
+                    '--card-bg-dark': 'rgba(0, 0, 0, 0.05)',
+                    '--card-border-light': 'rgba(255, 255, 255, 0.15)',
+                    '--card-border-dark': 'rgba(0, 0, 0, 0.15)',
+                    '--text-color-light': '#111',
+                    '--text-color-dark': '#f8fafc'
+                }
+            };
+
+            const root = document.documentElement;
+            function applyColorScheme(name) {
+                const scheme = colorSchemes[name] || colorSchemes.default;
+                for (const [key, value] of Object.entries(scheme)) {
+                    root.style.setProperty(key, value);
+                }
+            }
+            const savedTheme = localStorage.getItem('themeColor') || 'default';
+            applyColorScheme(savedTheme);
+
+            // ---------- 下载处理 ----------
+            const downloadBtn = document.getElementById('downloadBtn');
+            const toast = document.getElementById('toast');
+            const downloadUrl = 'https://wwbut.lanzouw.com/ioAJl3z14b3i';
+            const password = 'gaw1';
+
+            function showToast() {
+                toast.classList.add('show');
+                clearTimeout(toast.hideTimer);
+                toast.hideTimer = setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+
+            async function copyPassword() {
+                try {
+                    await navigator.clipboard.writeText(password);
+                    showToast();
+                } catch (err) {
+                    // 降级方案
+                    const textarea = document.createElement('textarea');
+                    textarea.value = password;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textarea);
+                    showToast();
+                }
+            }
+
+            downloadBtn.addEventListener('click', async function(e) {
+                e.preventDefault();
+                await copyPassword();
+                // 延迟打开，确保用户看到提示
+                setTimeout(() => {
+                    window.open(downloadUrl, '_blank');
+                }, 300);
+            });
+        })();
+    </script>
+</body>
+</html>
