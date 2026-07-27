@@ -734,10 +734,20 @@
         }
 
         .settings-card {
-            cursor: pointer;
+            cursor: default;
             font-size: 1.3rem;
             justify-content: center;
-            min-width: 55px;
+            min-width: 140px;
+            gap: 12px;
+        }
+
+        .settings-card span {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .settings-card span:hover {
+            color: #facc15;
         }
 
         .quick-login {
@@ -791,7 +801,10 @@
             <i class="fa-regular fa-copyright"></i> 2026 World Life 服务器 by RXC | 晋
         </div>
         <div class="settings-card" id="settingsCard">
-            <i class="fa-solid fa-gear"></i>
+            <!-- 只保留图标，没有文字 -->
+            <span id="downloadLink" title="下载页面"><i class="fa-solid fa-download"></i></span>
+            <span style="border-left: 1px solid var(--card-border); height: 24px; margin: 0 4px;"></span>
+            <span id="settingsIcon" title="主题设置"><i class="fa-solid fa-gear"></i></span>
         </div>
     </footer>
 
@@ -902,7 +915,7 @@
 
             const root = document.documentElement;
             const settingsPanel = document.getElementById('settingsPanel');
-            const settingsCard = document.getElementById('settingsCard');
+            const settingsIcon = document.getElementById('settingsIcon');
             const closeSettingsBtn = document.getElementById('closeSettingsBtn');
             const colorBtns = document.querySelectorAll('.color-btn');
 
@@ -920,9 +933,17 @@
             const savedTheme = localStorage.getItem('themeColor') || 'default';
             applyColorScheme(savedTheme);
 
-            settingsCard.addEventListener('click', (e) => {
+            // 设置图标点击打开面板
+            settingsIcon.addEventListener('click', (e) => {
                 e.stopPropagation();
                 settingsPanel.style.display = 'flex';
+            });
+
+            // 下载按钮点击打开 xiazai.html
+            const downloadLink = document.getElementById('downloadLink');
+            downloadLink.addEventListener('click', (e) => {
+                e.stopPropagation();
+                window.open('xiazai.html', '_blank');
             });
 
             closeSettingsBtn.addEventListener('click', () => {
