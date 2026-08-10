@@ -537,12 +537,29 @@
                 window.open('xiazai.html', '_blank');
             });
 
-            // ---------- 完整内容与功能（与桌面版完全相同） ----------
-            const diaryEntries = [
-                { file: 'date1.html', date: '2025-08-06', desc: '测试日报。' },
-                { file: 'date2.html', date: '2025-08-05', desc: '服务器维护，优化了地图加载速度。' }
-            ];
+            // ---------- 日报数据从 date.json 加载 ----------
+            let cachedDailyHTML = null;
 
+            async function loadDailyPage() {
+                if (cachedDailyHTML) return cachedDailyHTML;
+                try {
+                    const response = await fetch('date.json');
+                    if (!response.ok) throw new Error('加载失败');
+                    const entries = await response.json();
+                    let list = '<ul>';
+                    entries.forEach(entry => {
+                        list += `<li><a href="${entry.file}" target="_blank">${entry.date}</a> — ${entry.desc}</li>`;
+                    });
+                    list += '</ul>';
+                    cachedDailyHTML = `<section class="glass-card"><h2><i class="fa-regular fa-calendar"></i> 服务器日报列表</h2>${list}</section>`;
+                    return cachedDailyHTML;
+                } catch (err) {
+                    console.error('日报加载失败:', err);
+                    return '<section class="glass-card"><h2><i class="fa-regular fa-calendar"></i> 服务器日报列表</h2><p>日报加载失败，请稍后重试。</p></section>';
+                }
+            }
+
+            // ---------- 完整内容与功能 ----------
             function setupPasswordHint(passwordId, hintSelector) {
                 const pwdInput = document.getElementById(passwordId);
                 if (!pwdInput) return;
@@ -560,7 +577,7 @@
                     `<section class="glass-card"><h2><i class="fa-solid fa-users"></i> 主要人员</h2>
          <div class="team" style="display: flex; flex-direction: column; gap: 1rem;">
            <span class="role-owner" style="display: flex; width: 100%; align-items: center; justify-content: center; gap: 8px;">
-             <img src="ServerPhoto/RXC.jpeg" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
+             <img src="ServerPhoto/RXC.png" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;">
              <i class="fa-solid fa-crown"></i> 服主：星星 RXC
            </span>
            <div style="display: flex; gap: 1rem; width: 100%;">
@@ -579,13 +596,9 @@
          </div></section>`;
             }
 
+            // 日报页面改为加载中占位
             function getDailyPage() {
-                let list = '<ul>';
-                diaryEntries.forEach(entry => {
-                    list += `<li><a href="${entry.file}" target="_blank">${entry.date}</a> — ${entry.desc}</li>`;
-                });
-                list += '</ul>';
-                return `<section class="glass-card"><h2><i class="fa-regular fa-calendar"></i> 服务器日报列表</h2>${list}</section>`;
+                return '<section class="glass-card"><h2><i class="fa-regular fa-calendar"></i> 服务器日报列表</h2><p>加载中…</p></section>';
             }
 
             function getLoginPage() {
@@ -658,6 +671,7 @@
                 }, 150);
             }
 
+            // 重写 switchPage 以支持日报异步加载
             window.switchPage = function(e) {
                 e.preventDefault();
                 const link = e.currentTarget;
@@ -665,8 +679,24 @@
                 link.classList.add('active');
                 updateUserInfo();
                 const page = link.dataset.page;
-                const content = pages[page] || '';
-                animateContent(content);
+
+                if (page === 'daily') {
+                    // 先显示加载中
+                    animateContent(getDailyPage());
+                    // 异步加载真实内容并替换
+                    loadDailyPage().then(html => {
+                        const main = document.getElementById('content');
+                        main.classList.add('fade-out');
+                        setTimeout(() => {
+                            main.innerHTML = html;
+                            main.classList.remove('fade-out');
+                            main.classList.add('fade-in');
+                        }, 150);
+                    });
+                } else {
+                    animateContent(pages[page] || '');
+                }
+
                 if (page === 'login' && !localStorage.getItem('currentUser')) {
                     setTimeout(initSliderCaptcha, 300);
                 }
