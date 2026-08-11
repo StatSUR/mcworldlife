@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title id="page-title">日报 · World Life</title>
+    <link rel="icon" href="../WL LOGO.png" type="image/png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- 引入 marked.js -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js">
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --card-bg-light: rgba(255, 255, 255, 0.65);
+            --card-bg-dark: rgba(0, 0, 0, 0.65);
+            --card-border-light: rgba(255, 255, 255, 0.8);
+            --card-border-dark: rgba(0, 0, 0, 0.6);
+            --text-color-light: #111;
+            --text-color-dark: #f8fafc;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-image: url('../BGPhoto Light.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            color: var(--text-color-light);
+            transition: background 0.3s, color 0.3s;
+            padding-top: 90px;
+            padding-bottom: 90px;
+            -webkit-user-drag: none;
+            user-drag: none;
+            --card-bg: var(--card-bg-light);
+            --card-border: var(--card-border-light);
+            --text-color: var(--text-color-light);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-image: url('../BGPhoto Dark.png');
+                color: var(--text-color-dark);
+                --card-bg: var(--card-bg-dark);
+                --card-border: var(--card-border-dark);
+                --text-color: var(--text-color-dark);
+            }
+        }
+
+        /* ===== 顶部悬浮卡片 ===== */
+        header {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 70px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: var(--text-color);
+            border-radius: 24px;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            padding: 0 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            header {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            }
+        }
+
+        .title {
+            font-size: clamp(1.2rem, 2vw, 1.6rem);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .title img {
+            width: 1.6em;
+            height: 1.6em;
+            vertical-align: middle;
+            border-radius: 4px;
+        }
+
+        /* ===== 主内容区 ===== */
+        main {
+            flex: 1;
+            padding: clamp(1rem, 3vw, 2rem);
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        article {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: var(--text-color);
+            border-radius: 24px;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            padding: clamp(1.5rem, 4vw, 2.5rem);
+            margin: 1rem auto;
+            width: 100%;
+            transition: all 0.3s ease;
+            animation: fadeUp 0.5s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        article:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            article {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            }
+            article:hover {
+                box-shadow: 0 18px 40px rgba(0, 0, 0, 0.7);
+            }
+        }
+
+        .article-header {
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--card-border);
+            padding-bottom: 1rem;
+        }
+
+        .article-label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .article-label {
+                color: #94a3b8;
+            }
+        }
+
+        h1#article-title {
+            font-size: 2.2rem;
+            color: #1e40af;
+            margin-bottom: 0.8rem;
+            line-height: 1.3;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            h1#article-title {
+                color: #facc15;
+            }
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            color: #475569;
+            font-size: 0.95rem;
+            align-items: center;
+        }
+
+        .meta i {
+            margin-right: 4px;
+            color: #0ea5e9;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .meta {
+                color: #cbd5e1;
+            }
+            .meta i {
+                color: #8b5cf6;
+            }
+        }
+
+        /* ===== Markdown 渲染后的正文样式 ===== */
+        .article-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #1e293b;
+        }
+
+        .article-content p {
+            margin: 1.2rem 0;
+        }
+
+        /* # 标题（h1）：带蓝色竖线 */
+        .article-content h1 {
+            font-size: 1.4rem;
+            margin: 1.5rem 0 0.8rem;
+            color: #0F172A;
+            border-left: 4px solid #0ea5e9;
+            padding-left: 1rem;
+        }
+
+        /* ## 标题（h2）：普通样式，无竖线 */
+        .article-content h2 {
+            font-size: 1.2rem;
+            margin: 1.2rem 0 0.6rem;
+            color: #0F172A;
+        }
+
+        /* ### 标题（h3）：保留备用 */
+        .article-content h3 {
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem;
+            color: #0F172A;
+            border-left: 3px solid #0ea5e9;
+            padding-left: 0.8rem;
+        }
+
+        /* *文本* 渲染为加粗（marked 默认输出 <em>，用 CSS 转为 bold） */
+        .article-content em {
+            font-weight: bold;
+            font-style: normal;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            .article-content {
+                color: #e2e8f0;
+            }
+            .article-content h1 {
+                color: #f8fafc;
+                border-left-color: #8b5cf6;
+            }
+            .article-content h2 {
+                color: #f8fafc;
+            }
+            .article-content h3 {
+                color: #f8fafc;
+                border-left-color: #8b5cf6;
+            }
+        }
+
+        /* ===== 底部悬浮卡片 ===== */
+        footer {
+            position: fixed;
+            bottom: 20px;
+            left: 15px;
+            right: 15px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 70px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            color: var(--text-color);
+            border-radius: 24px;
+            border: 2px solid var(--card-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            gap: 6px;
+            white-space: nowrap;
+            padding: 0 2rem;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            footer {
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            }
+        }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+    <header>
+        <div class="title">
+            <img src="../WL LOGO.png" alt="WL图标">
+            World Life 日报
+        </div>
+    </header>
+
+    <main>
+        <article>
+            <div class="article-header">
+                <div class="article-label" id="article-label"><i class="fa-regular fa-newspaper"></i> 加载中…</div>
+                <h1 id="article-title">加载中…</h1>
+                <div class="meta" id="article-meta">
+                    <span><i class="fa-regular fa-calendar"></i> <span id="meta-date">—</span></span>
+                    <span id="meta-author" style="display: inline-flex; align-items: center; gap: 6px;">
+                        <i class="fa-regular fa-user"></i> 发布者：
+                        <!-- 动态填充 -->
+                    </span>
+                </div>
+            </div>
+
+            <div class="article-content" id="article-content">
+                <p>文章加载中…</p>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <i class="fa-regular fa-copyright"></i> 2026 World Life 服务器 by RXC | 晋
+    </footer>
+
+    <script>
+        (function() {
+            // ========== 颜色主题方案 ==========
+            const colorSchemes = {
+                default: {
+                    '--card-bg-light': 'rgba(255, 255, 255, 0.65)',
+                    '--card-bg-dark': 'rgba(0, 0, 0, 0.65)',
+                    '--card-border-light': 'rgba(255, 255, 255, 0.8)',
+                    '--card-border-dark': 'rgba(0, 0, 0, 0.6)',
+                    '--text-color-light': '#111',
+                    '--text-color-dark': '#f8fafc'
+                },
+                blue: {
+                    '--card-bg-light': 'rgba(190, 215, 240, 0.65)',
+                    '--card-bg-dark': 'rgba(30, 50, 80, 0.65)',
+                    '--card-border-light': 'rgba(150, 190, 230, 0.9)',
+                    '--card-border-dark': 'rgba(40, 60, 90, 0.7)',
+                    '--text-color-light': '#0a192f',
+                    '--text-color-dark': '#e2e8f0'
+                },
+                pink: {
+                    '--card-bg-light': 'rgba(245, 200, 210, 0.65)',
+                    '--card-bg-dark': 'rgba(100, 40, 50, 0.65)',
+                    '--card-border-light': 'rgba(235, 170, 185, 0.9)',
+                    '--card-border-dark': 'rgba(120, 50, 60, 0.7)',
+                    '--text-color-light': '#3a0a12',
+                    '--text-color-dark': '#fde8ec'
+                },
+                orange: {
+                    '--card-bg-light': 'rgba(250, 225, 195, 0.65)',
+                    '--card-bg-dark': 'rgba(120, 70, 40, 0.65)',
+                    '--card-border-light': 'rgba(240, 190, 140, 0.9)',
+                    '--card-border-dark': 'rgba(140, 85, 50, 0.7)',
+                    '--text-color-light': '#3e270b',
+                    '--text-color-dark': '#fef3e4'
+                },
+                glass: {
+                    '--card-bg-light': 'rgba(255, 255, 255, 0.05)',
+                    '--card-bg-dark': 'rgba(0, 0, 0, 0.05)',
+                    '--card-border-light': 'rgba(255, 255, 255, 0.15)',
+                    '--card-border-dark': 'rgba(0, 0, 0, 0.15)',
+                    '--text-color-light': '#111',
+                    '--text-color-dark': '#f8fafc'
+                }
+            };
+
+            const root = document.documentElement;
+
+            function applyColorScheme(schemeName) {
+                const scheme = colorSchemes[schemeName] || colorSchemes['default'];
+                for (const [key, value] of Object.entries(scheme)) {
+                    root.style.setProperty(key, value);
+                }
+            }
+
+            const savedTheme = localStorage.getItem('themeColor') || 'default';
+            applyColorScheme(savedTheme);
+
+            // ========== 加载并渲染 Markdown（通过 URL 参数指定文件） ==========
+            async function loadArticle() {
+                // 从 URL 获取 md 文件名，例如 ?md=date1.md
+                const params = new URLSearchParams(window.location.search);
+                const mdFile = params.get('md');
+
+                if (!mdFile) {
+                    document.getElementById('article-label').innerHTML =
+                        '<i class="fa-solid fa-triangle-exclamation"></i> 缺少参数';
+                    document.getElementById('article-title').textContent = '未指定文章';
+                    document.getElementById('article-content').innerHTML =
+                        '<p>请在 URL 中添加 ?md=文件名.md 指定要加载的日报。</p>';
+                    return;
+                }
+
+                try {
+                    const response = await fetch(mdFile);   // 相对于当前 date.html 所在目录
+                    if (!response.ok) throw new Error('无法加载文章：' + mdFile);
+                    const raw = await response.text();
+
+                    // 解析元数据（Front Matter 格式）
+                    const parts = raw.split('---');
+                    let meta = {};
+                    let markdown = raw;
+
+                    if (parts.length >= 3 && raw.trim().startsWith('---')) {
+                        const metaText = parts[1].trim();
+                        metaText.split('\n').forEach(line => {
+                            const colonIndex = line.indexOf(':');
+                            if (colonIndex > 0) {
+                                const key = line.substring(0, colonIndex).trim();
+                                const value = line.substring(colonIndex + 1).trim();
+                                meta[key] = value;
+                            }
+                        });
+                        markdown = parts.slice(2).join('---').trim();
+                    }
+
+                    // 填充页面元数据
+                    document.getElementById('article-label').innerHTML =
+                        '<i class="fa-regular fa-newspaper"></i> ' + (meta['编号'] || '日报');
+                    document.getElementById('article-title').textContent = meta['标题'] || '无标题';
+                    document.getElementById('meta-date').textContent = meta['时间'] || '—';
+                    document.title = (meta['标题'] || '日报') + ' · World Life 日报';
+
+                    // 构建发布者 HTML
+                    const authorSpan = document.getElementById('meta-author');
+                    const avatar = meta['发布者头像'] || '';
+                    const authorName = meta['发布者名称'] || '未知';
+                    const role = meta['发布者角色'] || '';
+
+                    let authorHTML = '<i class="fa-regular fa-user"></i> 发布者：';
+                    if (avatar) {
+                        authorHTML +=
+                            `<img src="${avatar}" alt="${authorName}" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover;">`;
+                    }
+                    if (role === '服主') {
+                        authorHTML += `
+                            <span style="display: inline-flex; align-items: center; gap: 3px; padding: 2px 6px; border: 1.5px solid #facc15; border-radius: 24px; background: transparent;">
+                                <i class="fa-solid fa-crown" style="color: #facc15; font-size: 0.7rem;"></i>
+                                <span style="color: #facc15; font-weight: 500; font-size: 0.7rem;">服主</span>
+                            </span>`;
+                    } else if (role) {
+                        authorHTML +=
+                            `<span style="font-size: 0.7rem; padding: 2px 6px; border: 1px solid var(--card-border); border-radius: 24px;">${role}</span>`;
+                    }
+                    authorHTML += `<span style="font-size: 0.85rem;">${authorName}</span>`;
+                    authorSpan.innerHTML = authorHTML;
+
+                    // 配置 marked 并渲染
+                    marked.setOptions({
+                        breaks: false,
+                        gfm: true
+                    });
+                    document.getElementById('article-content').innerHTML = marked.parse(markdown);
+
+                } catch (err) {
+                    console.error('文章加载失败:', err);
+                    document.getElementById('article-label').innerHTML =
+                        '<i class="fa-solid fa-triangle-exclamation"></i> 加载失败';
+                    document.getElementById('article-title').textContent = '文章无法加载';
+                    document.getElementById('article-content').innerHTML =
+                        '<p style="color: #ef4444;">文章加载失败，请检查文件：' + mdFile + '</p>';
+                }
+            }
+
+            // 页面加载完成后执行
+            loadArticle();
+        })();
+    </script>
+</body>
+</html>
