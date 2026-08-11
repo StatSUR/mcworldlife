@@ -1,12 +1,12 @@
 [
     {
-        "file": "date/date1.html",
+        "file": "date/date.html?md=date1.md",
         "date": "2025-08-06",
-        "desc": "测试日报。"
+        "desc": "沈云区开发计划"
     },
     {
-        "file": "date/date2.html",
+        "file": "date/date.html?md=date2.md",
         "date": "2025-08-05",
-        "desc": "服务器维护，优化了地图加载速度。"
+        "desc": "服务器维护，优化了地图加载速度"
     }
 ]
